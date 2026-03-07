@@ -1,24 +1,24 @@
 import {
   Settings,
   Users,
-  Database,
   Shield,
   Server,
   CheckCircle2,
   AlertTriangle,
   XCircle,
-  Activity,
   FileText,
   Clock,
+  Zap,
+  ChevronRight,
 } from "lucide-react";
 
 const connectors = [
-  { name: "Microsoft Entra ID", status: "connected" as const, version: "v2.0", lastSync: "2 min ago" },
-  { name: "Microsoft Graph API", status: "connected" as const, version: "v1.0", lastSync: "5 min ago" },
-  { name: "Azure OpenAI", status: "connected" as const, version: "GPT-4o", lastSync: "Real-time" },
-  { name: "Microsoft 365", status: "connected" as const, version: "v1.0", lastSync: "10 min ago" },
-  { name: "Microsoft Defender", status: "degraded" as const, version: "v2.0", lastSync: "45 min ago" },
-  { name: "ServiceNow", status: "disconnected" as const, version: "—", lastSync: "Not configured" },
+  { name: "Microsoft Entra ID", status: "connected" as const, version: "v2.0", lastSync: "2 min ago", desc: "Identity & access management" },
+  { name: "Microsoft Graph API", status: "connected" as const, version: "v1.0", lastSync: "5 min ago", desc: "Unified API gateway" },
+  { name: "Azure OpenAI", status: "connected" as const, version: "GPT-4o", lastSync: "Real-time", desc: "AI intelligence layer" },
+  { name: "Microsoft 365", status: "connected" as const, version: "v1.0", lastSync: "10 min ago", desc: "Productivity suite" },
+  { name: "Microsoft Defender", status: "degraded" as const, version: "v2.0", lastSync: "45 min ago", desc: "Security operations" },
+  { name: "ServiceNow", status: "disconnected" as const, version: "—", lastSync: "Not configured", desc: "ITSM bridge (optional)" },
 ];
 
 const statusIcon = {
@@ -28,11 +28,11 @@ const statusIcon = {
 };
 
 const roles = [
-  { role: "Administrator", users: 3, permissions: "Full system access" },
-  { role: "IT Operations", users: 12, permissions: "Incident & request management" },
-  { role: "Security Operations", users: 5, permissions: "Security alerts & investigations" },
-  { role: "Employee", users: 284, permissions: "Submit requests, view status" },
-  { role: "Service Desk", users: 8, permissions: "Triage & assign incidents" },
+  { role: "Administrator", users: 3, permissions: "Full system access, configuration, audit" },
+  { role: "IT Operations", users: 12, permissions: "Incident & request management, asset tracking" },
+  { role: "Security Operations", users: 5, permissions: "Security alerts, investigations, threat response" },
+  { role: "Service Desk", users: 8, permissions: "Triage, assign incidents, first-line support" },
+  { role: "Employee", users: 284, permissions: "Submit requests, view own status" },
 ];
 
 const auditLog = [
@@ -60,7 +60,31 @@ export default function Admin() {
     <div className="space-y-6 animate-slide-in">
       <div>
         <h1 className="text-2xl font-semibold tracking-tight">Administration</h1>
-        <p className="text-sm text-muted-foreground mt-1">System configuration, integrations, and audit</p>
+        <p className="text-sm text-muted-foreground mt-1">System configuration, integrations, and audit trail</p>
+      </div>
+
+      {/* Architecture Overview */}
+      <div className="ai-panel">
+        <div className="flex items-center gap-2 mb-4">
+          <Zap className="w-4 h-4 text-primary" />
+          <h2 className="text-sm font-semibold">Platform Architecture</h2>
+        </div>
+        <div className="flex items-center justify-center gap-3 flex-wrap">
+          <div className="bg-info/10 border border-info/20 rounded-lg px-4 py-2.5 text-center">
+            <p className="text-xs font-medium text-info">Microsoft Enterprise</p>
+            <p className="text-[10px] text-muted-foreground mt-0.5">Azure · M365 · Entra · Defender</p>
+          </div>
+          <ChevronRight className="w-4 h-4 text-primary/50" />
+          <div className="bg-primary/10 border border-primary/20 rounded-lg px-4 py-2.5 text-center">
+            <p className="text-xs font-semibold text-primary">Workflow Command Center</p>
+            <p className="text-[10px] text-muted-foreground mt-0.5">Incidents · Requests · Assets</p>
+          </div>
+          <ChevronRight className="w-4 h-4 text-primary/50" />
+          <div className="bg-cyan/10 border border-cyan/20 rounded-lg px-4 py-2.5 text-center">
+            <p className="text-xs font-medium text-cyan">AI Intelligence</p>
+            <p className="text-[10px] text-muted-foreground mt-0.5">Azure OpenAI · Copilot</p>
+          </div>
+        </div>
       </div>
 
       {/* Integration Status */}
@@ -75,7 +99,8 @@ export default function Admin() {
               <div className={`connector-dot-${c.status}`} />
               <div className="flex-1 min-w-0">
                 <p className="text-sm font-medium">{c.name}</p>
-                <p className="text-[11px] text-muted-foreground">{c.version} · {c.lastSync}</p>
+                <p className="text-[10px] text-muted-foreground">{c.desc}</p>
+                <p className="text-[10px] text-muted-foreground mt-0.5">{c.version} · {c.lastSync}</p>
               </div>
               {statusIcon[c.status]}
             </div>
@@ -91,6 +116,7 @@ export default function Admin() {
               <Users className="w-4 h-4 text-primary" />
               User Roles
             </h2>
+            <span className="text-[10px] text-muted-foreground">{roles.reduce((sum, r) => sum + r.users, 0)} total users</span>
           </div>
           <div className="divide-y divide-border/40">
             {roles.map((r) => (
@@ -99,7 +125,7 @@ export default function Admin() {
                   <p className="text-sm font-medium">{r.role}</p>
                   <p className="text-[11px] text-muted-foreground">{r.permissions}</p>
                 </div>
-                <span className="text-xs text-muted-foreground bg-secondary px-2 py-1 rounded-md">{r.users} users</span>
+                <span className="text-xs text-muted-foreground bg-secondary px-2 py-1 rounded-md font-mono">{r.users}</span>
               </div>
             ))}
           </div>
@@ -110,14 +136,14 @@ export default function Admin() {
           <div className="section-header">
             <h2 className="section-title flex items-center gap-2">
               <Settings className="w-4 h-4 text-primary" />
-              Workflow Settings
+              Workflow Automation
             </h2>
           </div>
           <div className="divide-y divide-border/40">
             {workflowSettings.map((s) => (
               <div key={s.name} className="px-5 py-3 flex items-center justify-between hover:bg-muted/20 transition-colors">
                 <span className="text-sm">{s.name}</span>
-                <div className={`w-9 h-5 rounded-full relative transition-colors ${s.enabled ? "bg-success" : "bg-muted"}`}>
+                <div className={`w-9 h-5 rounded-full relative transition-colors cursor-pointer ${s.enabled ? "bg-success" : "bg-muted"}`}>
                   <div className={`absolute top-0.5 w-4 h-4 rounded-full bg-white shadow transition-transform ${s.enabled ? "left-[18px]" : "left-0.5"}`} />
                 </div>
               </div>
@@ -133,7 +159,7 @@ export default function Admin() {
             <FileText className="w-4 h-4 text-primary" />
             Audit Log
           </h2>
-          <span className="text-[11px] text-muted-foreground">Today</span>
+          <span className="text-[11px] text-muted-foreground">Today — {auditLog.length} events</span>
         </div>
         <div className="divide-y divide-border/40">
           {auditLog.map((entry, i) => (
@@ -144,7 +170,7 @@ export default function Admin() {
                 <p className="text-sm">{entry.action}</p>
                 <p className="text-[11px] text-muted-foreground mt-0.5">{entry.user}</p>
               </div>
-              <span className={`text-[10px] px-2 py-0.5 rounded-full capitalize ${
+              <span className={`text-[10px] px-2 py-0.5 rounded-full capitalize font-medium ${
                 entry.type === "incident" ? "bg-warning/15 text-warning" :
                 entry.type === "security" ? "bg-critical/15 text-critical" :
                 entry.type === "ai" ? "bg-primary/15 text-primary" :

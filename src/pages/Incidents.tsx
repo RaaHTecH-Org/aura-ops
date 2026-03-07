@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { incidents, type Incident } from "@/data/mock-data";
-import { Bot, Search, Plus, X, Calendar, Users, Server } from "lucide-react";
+import { Bot, Search, Plus, X, Calendar, Users, Server, AlertTriangle, ShieldAlert, Clock, ArrowUpRight } from "lucide-react";
 
 const priorityOrder = { critical: 0, high: 1, medium: 2, low: 3 };
 const allStatuses = ["all", "open", "in-progress", "resolved", "closed"];
@@ -46,12 +46,44 @@ export default function Incidents() {
         <div>
           <h1 className="text-2xl font-semibold tracking-tight">Incident Management</h1>
           <p className="text-sm text-muted-foreground mt-1">
-            {counts.total} total · {counts.critical} critical · {counts.open} open · {counts.inProgress} in progress
+            Enterprise incident tracking and AI-assisted resolution
           </p>
         </div>
         <button className="inline-flex items-center gap-2 px-4 py-2 rounded-md text-sm font-medium transition-colors text-primary-foreground" style={{ background: 'var(--gradient-primary)' }}>
           <Plus className="w-4 h-4" /> New Incident
         </button>
+      </div>
+
+      {/* Summary strip */}
+      <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
+        <div className="stat-card flex items-center gap-3">
+          <AlertTriangle className="w-5 h-5 text-warning" />
+          <div>
+            <p className="text-lg font-semibold">{counts.total}</p>
+            <p className="text-[11px] text-muted-foreground">Total Incidents</p>
+          </div>
+        </div>
+        <div className="stat-card flex items-center gap-3">
+          <ShieldAlert className="w-5 h-5 text-critical" />
+          <div>
+            <p className="text-lg font-semibold text-critical">{counts.critical}</p>
+            <p className="text-[11px] text-muted-foreground">Critical</p>
+          </div>
+        </div>
+        <div className="stat-card flex items-center gap-3">
+          <ArrowUpRight className="w-5 h-5 text-info" />
+          <div>
+            <p className="text-lg font-semibold">{counts.open}</p>
+            <p className="text-[11px] text-muted-foreground">Open</p>
+          </div>
+        </div>
+        <div className="stat-card flex items-center gap-3">
+          <Clock className="w-5 h-5 text-cyan" />
+          <div>
+            <p className="text-lg font-semibold">{counts.inProgress}</p>
+            <p className="text-[11px] text-muted-foreground">In Progress</p>
+          </div>
+        </div>
       </div>
 
       {/* Filters */}
@@ -111,43 +143,45 @@ export default function Incidents() {
       <div className="grid lg:grid-cols-5 gap-6">
         {/* Table */}
         <div className={`${selected ? 'lg:col-span-3' : 'lg:col-span-5'} bg-card border border-border rounded-lg overflow-hidden`}>
-          <table className="data-table">
-            <thead>
-              <tr>
-                <th>ID</th>
-                <th>Title</th>
-                <th>System</th>
-                <th>Priority</th>
-                <th>Status</th>
-                <th>Team</th>
-                <th>Updated</th>
-              </tr>
-            </thead>
-            <tbody>
-              {filtered.map((inc) => (
-                <tr
-                  key={inc.id}
-                  className={`cursor-pointer ${selected?.id === inc.id ? "!bg-primary/5" : ""}`}
-                  onClick={() => setSelected(inc)}
-                >
-                  <td className="font-mono text-[11px] text-muted-foreground">{inc.id}</td>
-                  <td className="font-medium text-sm max-w-[200px] truncate">{inc.title}</td>
-                  <td className="text-[11px] text-muted-foreground">{inc.affectedSystem}</td>
-                  <td>
-                    <span className={`priority-${inc.priority} text-[11px] capitalize`}>{inc.priority}</span>
-                  </td>
-                  <td>
-                    <span className={`status-badge status-${inc.status}`}>{inc.status}</span>
-                  </td>
-                  <td className="text-[11px] text-muted-foreground">{inc.assignedTeam}</td>
-                  <td className="text-[11px] text-muted-foreground">{formatDate(inc.updatedAt)}</td>
+          <div className="overflow-x-auto">
+            <table className="data-table">
+              <thead>
+                <tr>
+                  <th>ID</th>
+                  <th>Title</th>
+                  <th>System</th>
+                  <th>Priority</th>
+                  <th>Status</th>
+                  <th>Team</th>
+                  <th>Updated</th>
                 </tr>
-              ))}
-              {filtered.length === 0 && (
-                <tr><td colSpan={7} className="text-center py-8 text-muted-foreground">No incidents match filters</td></tr>
-              )}
-            </tbody>
-          </table>
+              </thead>
+              <tbody>
+                {filtered.map((inc) => (
+                  <tr
+                    key={inc.id}
+                    className={`cursor-pointer ${selected?.id === inc.id ? "!bg-primary/5" : ""}`}
+                    onClick={() => setSelected(inc)}
+                  >
+                    <td className="font-mono text-[11px] text-muted-foreground">{inc.id}</td>
+                    <td className="font-medium text-sm max-w-[200px] truncate">{inc.title}</td>
+                    <td className="text-[11px] text-muted-foreground">{inc.affectedSystem}</td>
+                    <td>
+                      <span className={`priority-${inc.priority} text-[11px] capitalize`}>{inc.priority}</span>
+                    </td>
+                    <td>
+                      <span className={`status-badge status-${inc.status}`}>{inc.status}</span>
+                    </td>
+                    <td className="text-[11px] text-muted-foreground">{inc.assignedTeam}</td>
+                    <td className="text-[11px] text-muted-foreground">{formatDate(inc.updatedAt)}</td>
+                  </tr>
+                ))}
+                {filtered.length === 0 && (
+                  <tr><td colSpan={7} className="text-center py-8 text-muted-foreground">No incidents match filters</td></tr>
+                )}
+              </tbody>
+            </table>
+          </div>
         </div>
 
         {/* Detail Panel */}
@@ -155,7 +189,7 @@ export default function Incidents() {
           <div className="lg:col-span-2 bg-card border border-border rounded-lg">
             <div className="section-header">
               <span className="text-xs font-mono text-muted-foreground">{selected.id}</span>
-              <button onClick={() => setSelected(null)} className="text-muted-foreground hover:text-foreground">
+              <button onClick={() => setSelected(null)} className="text-muted-foreground hover:text-foreground transition-colors">
                 <X className="w-4 h-4" />
               </button>
             </div>
@@ -195,16 +229,16 @@ export default function Incidents() {
               </div>
 
               {selected.resolutionNotes && (
-                <div>
-                  <p className="text-[11px] text-muted-foreground mb-1">Resolution Notes</p>
-                  <p className="text-sm text-success">{selected.resolutionNotes}</p>
+                <div className="bg-success/5 border border-success/20 rounded-md p-3">
+                  <p className="text-[11px] text-success font-medium mb-1">Resolution Notes</p>
+                  <p className="text-sm text-success/90">{selected.resolutionNotes}</p>
                 </div>
               )}
 
               <div className="ai-panel">
                 <div className="flex items-center gap-2 mb-2">
                   <Bot className="w-3.5 h-3.5 text-primary" />
-                  <span className="text-[11px] font-semibold text-primary">AI Analysis & Recommendation</span>
+                  <span className="text-[11px] font-semibold text-primary">AI Analysis & Routing Recommendation</span>
                 </div>
                 <p className="text-xs text-muted-foreground leading-relaxed italic">
                   "{selected.aiSummary}"

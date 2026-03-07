@@ -80,7 +80,6 @@
     font-family: 'JetBrains Mono', monospace;
   }
 
-  /* Scrollbar styling */
   ::-webkit-scrollbar {
     width: 6px;
     height: 6px;
@@ -162,7 +161,7 @@
 
   .ai-panel {
     @apply bg-card border border-primary/20 rounded-lg p-5;
-    background: linear-gradient(135deg, hsl(222 41% 8%), hsl(199 89% 48% / 0.03));
+    background: linear-gradient(135deg, hsl(222 41% 8%), hsl(199 89% 48% / 0.04));
     box-shadow: 0 0 40px hsl(var(--primary) / 0.06), inset 0 1px 0 hsl(var(--primary) / 0.1);
   }
 
@@ -208,10 +207,11 @@
   }
 
   .connector-card {
-    @apply flex items-center gap-3 px-4 py-3 bg-secondary/50 rounded-lg border border-border/50 transition-all duration-200;
+    @apply flex items-center gap-3 px-4 py-3.5 bg-secondary/50 rounded-lg border border-border/50 transition-all duration-200;
   }
   .connector-card:hover {
     @apply border-primary/20 bg-secondary;
+    box-shadow: var(--shadow-glow);
   }
   .connector-dot-connected {
     @apply w-2 h-2 rounded-full bg-success shadow-[0_0_6px_hsl(var(--success)/0.5)];
@@ -221,5 +221,40 @@
   }
   .connector-dot-disconnected {
     @apply w-2 h-2 rounded-full bg-muted-foreground;
+  }
+
+  /* Markdown prose styling for AI responses */
+  .ai-prose h2 {
+    @apply text-sm font-semibold text-foreground mt-3 mb-2;
+  }
+  .ai-prose h3 {
+    @apply text-[13px] font-semibold text-foreground mt-2 mb-1;
+  }
+  .ai-prose p {
+    @apply text-[13px] leading-relaxed mb-2;
+  }
+  .ai-prose ul, .ai-prose ol {
+    @apply text-[13px] leading-relaxed mb-2 pl-4;
+  }
+  .ai-prose li {
+    @apply mb-0.5;
+  }
+  .ai-prose strong {
+    @apply text-foreground font-semibold;
+  }
+  .ai-prose table {
+    @apply w-full text-[12px] my-2 border-collapse;
+  }
+  .ai-prose th {
+    @apply text-left px-2 py-1 border-b border-border text-muted-foreground font-medium;
+  }
+  .ai-prose td {
+    @apply px-2 py-1 border-b border-border/40;
+  }
+  .ai-prose hr {
+    @apply border-border my-3;
+  }
+  .ai-prose code {
+    @apply text-primary bg-primary/10 px-1 py-0.5 rounded text-[12px];
   }
 }
