@@ -1,64 +1,37 @@
 
 
-## Plan: Page Transition Animations + Mobile Responsiveness
+## Plan: Connect Digital Twin "Run Diagnostics" to Autopilot Page
 
-### Part 1: Framer-Motion Entrance Animations
+### Approach
 
-Install `framer-motion` and create a shared animation utilities file, then apply staggered entrance animations across all pages.
+Create a mapping between Digital Twin node IDs and Autopilot incident IDs, then use `react-router-dom`'s `useNavigate` to navigate to `/autopilot?incident=INC-XXXX` when clicking "Run Diagnostics." On the Autopilot page, read the query param and auto-select the matching incident.
 
-**New file: `src/lib/animations.tsx`**
-- Export reusable `motion` wrapper components: `StaggerContainer`, `FadeUp`, `SlideIn`, `ScaleIn`
-- Define consistent animation presets (duration, stagger delay, easing)
+### Changes
 
-**Pages to update (all 7):**
+**`src/pages/DigitalTwin.tsx`:**
+- Add a mapping from node IDs to Autopilot incident IDs:
+  - `vpn-gw` → `INC-2001` (VPN Gateway)
+  - `entra-id` → `INC-2002` (Entra ID)
+  - `exchange` → `INC-2003` (Exchange Online)
+  - `internal-apps` / `db-cluster` → `INC-2004` (Azure Compute / CRM)
+  - `defender` → `INC-2005` (Defender)
+- Import `useNavigate` from `react-router-dom`
+- On "Run Diagnostics" button click, navigate to `/autopilot?incident=<id>`
+- If no matching autopilot incident exists for a node, disable the button or navigate to `/autopilot` without pre-selection
 
-| Page | Animation Treatment |
+**`src/pages/Autopilot.tsx`:**
+- Import `useSearchParams` from `react-router-dom`
+- On mount, read `incident` query param
+- If present, find the matching incident in `autopilotIncidents` and set it as `selected`
+
+### Node-to-Incident Mapping
+
+| Digital Twin Node | Autopilot Incident |
 |---|---|
-| **Dashboard** | Stat cards stagger in (0.05s delay each), ServiceHealthMap fades up, chart sections scale in |
-| **Incidents** | Summary strip staggers, filter bar slides in, table rows stagger with 0.03s delay |
-| **Service Requests** | Catalog cards stagger, stats fade up, table rows slide in |
-| **Assets** | Compliance cards stagger, type filters fade in, table rows stagger |
-| **Autopilot** | Status cards stagger, workflow steps animate left-to-right sequentially, table rows slide in |
-| **Digital Twin** | Summary stats stagger, topology SVG fades in, detail panel slides from right |
-| **AI Copilot** | Chat messages animate in individually, suggested queries stagger |
-
-**Implementation approach:**
-- Wrap page root `div` with `motion.div` for page-level fade
-- Wrap grid containers with stagger parent, each child as a `motion.div` with `fadeUp` variant
-- Table rows get `slideIn` with incremental delay (capped at ~10 rows to avoid slow renders)
-- Detail/side panels use `slideInRight` animation via `AnimatePresence`
-
-### Part 2: Mobile Responsiveness
-
-**`ServiceHealthMap.tsx`:**
-- Increase `paddingBottom` from 45% to 65% on mobile (`sm:pb-[45%] pb-[65%]`)
-- Scale node labels to hide on very small screens or use shorter names
-- Detail panel: change from `absolute right-3 w-72` to full-width bottom sheet on mobile using `useIsMobile()` hook
-- Reduce node dot sizes on mobile
-
-**`DigitalTwin.tsx`:**
-- The SVG viewBox approach already scales, but the detail panel needs work
-- Side panel: switch from side-by-side `flex gap-4` to stacked layout on mobile
-- Time-travel controls: stack vertically on small screens (wrap slider below play buttons)
-- Timeline marker labels: hide on mobile, show only key ones
-
-**`Autopilot.tsx`:**
-- Workflow steps: on mobile, show vertically stacked instead of horizontal with arrows
-- Incident table + detail panel: stack vertically on mobile instead of side-by-side
-- Hide less critical table columns on mobile (description, confidence bar)
-
-**`AppLayout.tsx`:**
-- Already has mobile sidebar — no changes needed
-
-**General responsive fixes:**
-- Dashboard stat grid: already uses `grid-cols-2 md:grid-cols-4 lg:grid-cols-7` — good
-- Ensure all detail panels use `useIsMobile()` to switch between side panel and bottom sheet patterns
-
-### Technical Details
-
-- **New dependency:** `framer-motion` (latest)
-- **New file:** `src/lib/animations.tsx` — shared motion components
-- **Files modified:** All 7 page files + `ServiceHealthMap.tsx`
-- **Hook used:** Existing `useIsMobile()` from `src/hooks/use-mobile.tsx`
-- **No breaking changes** — animations are additive, responsive changes use Tailwind breakpoints
+| `vpn-gw` | INC-2001 (Azure VPN Gateway) |
+| `entra-id` | INC-2002 (Microsoft Entra ID) |
+| `exchange` | INC-2003 (Exchange Online) |
+| `db-cluster` | INC-2004 (Azure Compute) |
+| `defender` | INC-2005 (Microsoft Defender) |
+| `storage-cluster` | INC-2006 (Azure Cache) |
 
