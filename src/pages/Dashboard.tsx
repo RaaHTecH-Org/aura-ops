@@ -13,6 +13,11 @@ import {
   Bell,
   Clock,
   Timer,
+  Zap,
+  RotateCcw,
+  Search as SearchIcon,
+  ShieldCheck,
+  CheckSquare,
 } from "lucide-react";
 import { Link } from "react-router-dom";
 import {
