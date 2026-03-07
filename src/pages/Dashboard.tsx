@@ -13,6 +13,11 @@ import {
   Bell,
   Clock,
   Timer,
+  Zap,
+  RotateCcw,
+  Search as SearchIcon,
+  ShieldCheck,
+  CheckSquare,
 } from "lucide-react";
 import { Link } from "react-router-dom";
 import {
@@ -229,6 +234,46 @@ export default function Dashboard() {
               </div>
             ))}
           </div>
+        </div>
+      </div>
+
+      {/* AI Recommended Actions */}
+      <div className="ai-panel">
+        <div className="flex items-center gap-2 mb-4">
+          <Zap className="w-4 h-4 text-primary" />
+          <h2 className="text-sm font-semibold">AI Recommended Actions</h2>
+          <span className="text-[10px] bg-primary/15 text-primary px-2 py-0.5 rounded-full ml-auto font-medium">
+            4 actions
+          </span>
+        </div>
+        <div className="grid sm:grid-cols-2 gap-3">
+          {[
+            { action: "Restart VPN Gateway", system: "Azure Network", priority: "high" as const, owner: "Network Operations", icon: RotateCcw },
+            { action: "Investigate Azure AD login failures", system: "Microsoft Entra ID", priority: "critical" as const, owner: "Identity Team", icon: SearchIcon },
+            { action: "Review Defender alerts", system: "Microsoft Defender", priority: "medium" as const, owner: "Security Operations", icon: ShieldCheck },
+            { action: "Approve pending access requests", system: "Microsoft 365", priority: "low" as const, owner: "IT Support", icon: CheckSquare },
+          ].map((item) => (
+            <div key={item.action} className="bg-secondary/50 border border-border/50 rounded-lg p-4 hover:border-primary/20 hover:bg-secondary transition-all cursor-pointer group">
+              <div className="flex items-start gap-3">
+                <div className="w-8 h-8 rounded-md bg-primary/10 flex items-center justify-center shrink-0 group-hover:bg-primary/15 transition-colors">
+                  <item.icon className="w-4 h-4 text-primary" />
+                </div>
+                <div className="flex-1 min-w-0">
+                  <p className="text-sm font-medium leading-tight">{item.action}</p>
+                  <p className="text-[11px] text-muted-foreground mt-1">{item.system}</p>
+                  <div className="flex items-center gap-2 mt-2">
+                    <span className={`text-[10px] px-2 py-0.5 rounded-full font-medium capitalize ${
+                      item.priority === "critical" ? "bg-critical/15 text-critical" :
+                      item.priority === "high" ? "bg-warning/15 text-warning" :
+                      item.priority === "medium" ? "bg-info/15 text-info" :
+                      "bg-muted text-muted-foreground"
+                    }`}>{item.priority}</span>
+                    <span className="text-[10px] text-muted-foreground">{item.owner}</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+          ))}
         </div>
       </div>
 
