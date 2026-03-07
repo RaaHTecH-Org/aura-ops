@@ -89,6 +89,9 @@ export default function Dashboard() {
         ))}
       </div>
 
+      {/* Service Health Map */}
+      <ServiceHealthMap />
+
       <div className="grid lg:grid-cols-3 gap-6">
         {/* Incident Trend Chart */}
         <div className="lg:col-span-2 bg-card border border-border rounded-lg">
