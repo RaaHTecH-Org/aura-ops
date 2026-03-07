@@ -1,5 +1,6 @@
 import { useState, useRef, useEffect } from "react";
-import { Bot, Send, Sparkles, MessageSquare, Zap, FileBarChart, Target } from "lucide-react";
+import { Bot, Send, Sparkles, MessageSquare, Zap, FileBarChart, Target, Shield } from "lucide-react";
+import ReactMarkdown from "react-markdown";
 
 interface Message {
   role: "user" | "assistant";
@@ -11,7 +12,7 @@ const suggestedQueries = [
   { text: "Show all critical issues affecting Azure", icon: Target },
   { text: "Which requests are blocked awaiting approval?", icon: MessageSquare },
   { text: "Generate executive summary for this week", icon: Zap },
-  { text: "List high priority tickets", icon: Target },
+  { text: "List high priority tickets", icon: Shield },
   { text: "What systems have the most issues?", icon: FileBarChart },
 ];
 
@@ -25,7 +26,7 @@ const mockResponses: Record<string, string> = {
   "generate executive summary for this week":
     "## Executive Operations Summary — Week of March 2, 2026\n\n### Key Metrics\n- **SLA Compliance:** 96.8% (target: 99%)\n- **System Health:** 94.2% (down from 97.1%)\n- **MTTR:** 4.2 hours (improved from 5.1h)\n- **Security Posture:** ⚠️ Elevated risk\n\n### Critical Items\n1. **Identity Platform Degradation** — Azure AD auth failures affecting enterprise SSO\n2. **Security Incident** — Credential attack targeting C-suite accounts\n3. **VPN Infrastructure** — Gateway failure impacting remote workforce\n\n### Service Delivery\n- 10 active service requests, 4 pending approval\n- 3 onboarding requests in pipeline\n- Average fulfillment time: 2.3 days\n\n### Asset Health\n- 312 tracked assets\n- 52 devices non-compliant after policy update\n- 18 Defender endpoint sensors offline\n\n### Recommendations\n1. Emergency identity infrastructure review\n2. Accelerate TPM 1.2 → 2.0 hardware refresh\n3. Implement automated token refresh for Power Automate\n4. Review conditional access named locations policy",
   "list high priority tickets":
-    "## High Priority Tickets\n\n**7 active high-priority incidents** (Critical + High):\n\n| ID | Title | Priority | Status | Team |\n|----|-------|----------|--------|------|\n| INC-001 | Azure AD Auth Failures | 🔴 Critical | Open | Identity Ops |\n| INC-002 | VPN Gateway Loss | 🔴 Critical | In Progress | Network Ops |\n| INC-008 | Suspicious Sign-in | 🔴 Critical | Open | Security Ops |\n| INC-003 | SharePoint Slow (APAC) | 🟠 High | Open | Cloud Services |\n| INC-005 | MFA Push Failures | 🟠 High | In Progress | Identity Ops |\n| INC-006 | Azure SQL High DTU | 🟠 High | Open | Database Ops |\n| INC-012 | CA Policy Blocking Users | 🟠 High | In Progress | Identity Ops |\n| INC-014 | Defender Sensors Offline | 🟠 High | Open | Security Ops |\n\n**⚠️ INC-008** should be triaged first — active credential compromise.\n**Identity Operations** team is overloaded with 3 concurrent high-priority incidents.",
+    "## High Priority Tickets\n\n**7 active high-priority incidents** (Critical + High):\n\n| ID | Title | Priority | Status | Team |\n|----|-------|----------|--------|------|\n| INC-001 | Azure AD Auth Failures | 🔴 Critical | Open | Identity Ops |\n| INC-002 | VPN Gateway Loss | 🔴 Critical | In Progress | Network Ops |\n| INC-008 | Suspicious Sign-in | 🔴 Critical | Open | Security Ops |\n| INC-003 | SharePoint Slow (APAC) | 🟠 High | Open | Cloud Services |\n| INC-005 | MFA Push Failures | 🟠 High | In Progress | Identity Ops |\n| INC-006 | Azure SQL High DTU | 🟠 High | Open | Database Ops |\n| INC-012 | CA Policy Blocking Users | 🟠 High | In Progress | Identity Ops |\n\n**⚠️ INC-008** should be triaged first — active credential compromise.\n**Identity Operations** team is overloaded with 3 concurrent high-priority incidents.",
   "what systems have the most issues?":
     "## Systems by Incident Volume\n\n| System | Active Incidents | Health Score |\n|--------|-----------------|-------------|\n| 🔴 Azure AD / Entra ID | 3 | 72% |\n| 🟠 Microsoft Defender | 2 | 78% |\n| 🟠 Azure Infrastructure | 2 | 65% (VPN) |\n| 🟡 Microsoft 365 | 3 | 88-99% |\n| 🟡 Power Platform | 1 | 95% |\n| 🟡 Intune / Endpoint | 1 | 85% |\n\n**Analysis:**\nIdentity & Access Management is the most impacted area with 3 active incidents across Azure AD and MFA services. This correlates with a potential upstream Microsoft platform issue.\n\n**Cross-incident correlation:** INC-001, INC-005, and INC-012 may share a common root cause in Azure AD token service. Recommend joint investigation.",
 };
@@ -98,7 +99,13 @@ export default function AICopilot() {
                       AI Copilot
                     </div>
                   )}
-                  <pre className="whitespace-pre-wrap font-sans text-[13px]">{msg.content}</pre>
+                  <div className={msg.role === "assistant" ? "ai-prose" : "text-[13px]"}>
+                    {msg.role === "assistant" ? (
+                      <ReactMarkdown>{msg.content}</ReactMarkdown>
+                    ) : (
+                      msg.content
+                    )}
+                  </div>
                 </div>
               </div>
             ))}
@@ -134,7 +141,7 @@ export default function AICopilot() {
         </div>
 
         {/* Suggested queries sidebar */}
-        <div className="hidden lg:block w-64 shrink-0">
+        <div className="hidden lg:block w-64 shrink-0 space-y-4">
           <div className="bg-card border border-border rounded-lg p-4">
             <p className="text-[11px] uppercase tracking-widest text-muted-foreground font-medium mb-3">Example Prompts</p>
             <div className="space-y-2">
@@ -142,7 +149,7 @@ export default function AICopilot() {
                 <button
                   key={q.text}
                   onClick={() => handleSend(q.text)}
-                  className="w-full text-left text-xs bg-secondary/60 border border-border/50 rounded-lg px-3 py-2.5 text-muted-foreground hover:text-foreground hover:border-primary/30 transition-all flex items-start gap-2"
+                  className="w-full text-left text-xs bg-secondary/60 border border-border/50 rounded-lg px-3 py-2.5 text-muted-foreground hover:text-foreground hover:border-primary/30 hover:bg-primary/5 transition-all flex items-start gap-2"
                 >
                   <q.icon className="w-3.5 h-3.5 text-primary shrink-0 mt-0.5" />
                   {q.text}
@@ -150,15 +157,15 @@ export default function AICopilot() {
               ))}
             </div>
           </div>
-          <div className="ai-panel mt-4">
+          <div className="ai-panel">
             <p className="text-[11px] uppercase tracking-widest text-primary/70 font-medium mb-2">Capabilities</p>
             <ul className="space-y-1.5 text-[11px] text-muted-foreground">
-              <li>• Incident summarization</li>
-              <li>• Cross-incident correlation</li>
-              <li>• Team routing recommendations</li>
-              <li>• Daily operations summaries</li>
-              <li>• Natural language queries</li>
-              <li>• Executive report generation</li>
+              <li className="flex items-center gap-1.5"><span className="w-1 h-1 rounded-full bg-primary" />Incident summarization</li>
+              <li className="flex items-center gap-1.5"><span className="w-1 h-1 rounded-full bg-primary" />Cross-incident correlation</li>
+              <li className="flex items-center gap-1.5"><span className="w-1 h-1 rounded-full bg-primary" />Team routing recommendations</li>
+              <li className="flex items-center gap-1.5"><span className="w-1 h-1 rounded-full bg-primary" />Daily operations summaries</li>
+              <li className="flex items-center gap-1.5"><span className="w-1 h-1 rounded-full bg-primary" />Natural language queries</li>
+              <li className="flex items-center gap-1.5"><span className="w-1 h-1 rounded-full bg-primary" />Executive report generation</li>
             </ul>
           </div>
         </div>

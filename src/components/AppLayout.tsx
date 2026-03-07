@@ -13,6 +13,7 @@ import {
   Bell,
   Search,
   ChevronRight,
+  Zap,
 } from "lucide-react";
 
 const navItems = [
@@ -32,7 +33,6 @@ export default function AppLayout({ children }: { children: ReactNode }) {
 
   return (
     <div className="flex h-screen overflow-hidden">
-      {/* Mobile overlay */}
       {sidebarOpen && (
         <div
           className="fixed inset-0 z-40 bg-background/80 backdrop-blur-sm lg:hidden"
@@ -40,7 +40,6 @@ export default function AppLayout({ children }: { children: ReactNode }) {
         />
       )}
 
-      {/* Sidebar */}
       <aside
         className={`fixed inset-y-0 left-0 z-50 w-60 bg-sidebar border-r border-sidebar-border flex flex-col transition-transform duration-200 lg:relative lg:translate-x-0 ${
           sidebarOpen ? "translate-x-0" : "-translate-x-full"
@@ -66,7 +65,7 @@ export default function AppLayout({ children }: { children: ReactNode }) {
           </button>
         </div>
 
-        <nav className="flex-1 px-3 py-4 space-y-0.5">
+        <nav className="flex-1 px-3 py-4 space-y-0.5 overflow-y-auto">
           <p className="text-[10px] uppercase tracking-widest text-muted-foreground px-3 mb-3 font-medium">
             Operations
           </p>
@@ -101,7 +100,10 @@ export default function AppLayout({ children }: { children: ReactNode }) {
 
         {/* Architecture card */}
         <div className="mx-3 mb-3 p-3 rounded-lg border border-primary/10 bg-primary/5">
-          <p className="text-[10px] uppercase tracking-widest text-primary/70 font-medium mb-2">Platform Flow</p>
+          <p className="text-[10px] uppercase tracking-widest text-primary/70 font-medium mb-2 flex items-center gap-1.5">
+            <Zap className="w-3 h-3" />
+            Platform Architecture
+          </p>
           <div className="space-y-1.5">
             <div className="text-[11px] text-muted-foreground flex items-center gap-1.5">
               <span className="w-1.5 h-1.5 rounded-full bg-info shrink-0" />
@@ -119,7 +121,7 @@ export default function AppLayout({ children }: { children: ReactNode }) {
             </div>
             <div className="text-[11px] text-muted-foreground flex items-center gap-1.5">
               <span className="w-1.5 h-1.5 rounded-full bg-cyan shrink-0" />
-              AI Insights / Automation
+              AI Insights & Automation
             </div>
           </div>
         </div>
@@ -134,16 +136,15 @@ export default function AppLayout({ children }: { children: ReactNode }) {
                 John Doe
               </p>
               <p className="text-[11px] text-sidebar-foreground">
-                IT Operations
+                IT Operations Lead
               </p>
             </div>
           </div>
         </div>
       </aside>
 
-      {/* Main content */}
       <main className="flex-1 flex flex-col overflow-hidden">
-        <header className="flex items-center gap-3 px-6 h-14 border-b border-border bg-card/50 shrink-0">
+        <header className="flex items-center gap-3 px-6 h-14 border-b border-border bg-card/50 backdrop-blur-sm shrink-0">
           <button onClick={() => setSidebarOpen(true)} className="lg:hidden">
             <Menu className="w-5 h-5 text-muted-foreground" />
           </button>
@@ -155,7 +156,11 @@ export default function AppLayout({ children }: { children: ReactNode }) {
             </div>
             <span className="lg:hidden text-sm font-medium">Workflow Command Center</span>
           </div>
-          <div className="flex items-center gap-2">
+          <div className="hidden md:flex items-center gap-1.5 text-[11px] text-muted-foreground mr-2">
+            <span className="w-1.5 h-1.5 rounded-full bg-success animate-pulse" />
+            AI-Assisted Enterprise Operations Platform
+          </div>
+          <div className="flex items-center gap-1">
             <button className="p-2 rounded-md hover:bg-secondary transition-colors text-muted-foreground hover:text-foreground">
               <Search className="w-4 h-4" />
             </button>
