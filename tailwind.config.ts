@@ -67,6 +67,10 @@ export default {
           DEFAULT: "hsl(var(--critical))",
           foreground: "hsl(var(--critical-foreground))",
         },
+        cyan: {
+          DEFAULT: "hsl(var(--cyan))",
+          foreground: "hsl(var(--cyan-foreground))",
+        },
         sidebar: {
           DEFAULT: "hsl(var(--sidebar-background))",
           foreground: "hsl(var(--sidebar-foreground))",
