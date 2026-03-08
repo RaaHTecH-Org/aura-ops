@@ -83,7 +83,7 @@ export default function AppLayout({ children }: { children: ReactNode }) {
           </div>
           <div className="flex-1 min-w-0">
             <h1 className="text-sm font-semibold text-sidebar-accent-foreground leading-none tracking-tight">
-              Workflow Command
+              Raahtech Command
             </h1>
             <p className="text-[10px] text-sidebar-foreground mt-0.5 uppercase tracking-widest">
               Center
