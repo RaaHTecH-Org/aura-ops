@@ -16,7 +16,17 @@ import {
   Search,
   ChevronRight,
   Zap,
+  Radio,
+  CheckCheck,
+  Trash2,
+  Info,
+  ShieldAlert,
+  CircleCheck,
 } from "lucide-react";
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
+import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
+import { ScrollArea } from "@/components/ui/scroll-area";
+import { useSimulation, SimNotification } from "@/hooks/use-simulation";
 
 const navItems = [
   { path: "/", label: "Dashboard", icon: LayoutDashboard },
@@ -33,7 +43,25 @@ export default function AppLayout({ children }: { children: ReactNode }) {
   const location = useLocation();
   const [sidebarOpen, setSidebarOpen] = useState(false);
 
+  const { notifications, unreadCount, isSimulating, toggleSimulation, markAllRead, clearNotifications } = useSimulation();
+
   const currentPage = navItems.find((n) => n.path === location.pathname);
+
+  const severityIcon = (type: SimNotification["type"]) => {
+    switch (type) {
+      case "critical": return <ShieldAlert className="w-3.5 h-3.5 text-critical shrink-0" />;
+      case "warning": return <AlertTriangle className="w-3.5 h-3.5 text-warning shrink-0" />;
+      case "success": return <CircleCheck className="w-3.5 h-3.5 text-success shrink-0" />;
+      default: return <Info className="w-3.5 h-3.5 text-info shrink-0" />;
+    }
+  };
+
+  const timeAgo = (date: Date) => {
+    const s = Math.floor((Date.now() - date.getTime()) / 1000);
+    if (s < 60) return `${s}s ago`;
+    if (s < 3600) return `${Math.floor(s / 60)}m ago`;
+    return `${Math.floor(s / 3600)}h ago`;
+  };
 
   return (
     <div className="flex h-screen overflow-hidden">
@@ -165,13 +193,62 @@ export default function AppLayout({ children }: { children: ReactNode }) {
             AI-Assisted Enterprise Operations Platform
           </div>
           <div className="flex items-center gap-1">
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <button
+                  onClick={toggleSimulation}
+                  className={`p-2 rounded-md transition-colors ${isSimulating ? "text-success" : "text-muted-foreground hover:text-foreground hover:bg-secondary"}`}
+                >
+                  <Radio className={`w-4 h-4 ${isSimulating ? "animate-pulse" : ""}`} />
+                </button>
+              </TooltipTrigger>
+              <TooltipContent side="bottom">
+                <p className="text-xs">{isSimulating ? "Simulation active" : "Start live demo"}</p>
+              </TooltipContent>
+            </Tooltip>
             <button className="p-2 rounded-md hover:bg-secondary transition-colors text-muted-foreground hover:text-foreground">
               <Search className="w-4 h-4" />
             </button>
-            <button className="p-2 rounded-md hover:bg-secondary transition-colors text-muted-foreground hover:text-foreground relative">
-              <Bell className="w-4 h-4" />
-              <span className="absolute top-1.5 right-1.5 w-1.5 h-1.5 rounded-full bg-critical" />
-            </button>
+            <Popover>
+              <PopoverTrigger asChild>
+                <button className="p-2 rounded-md hover:bg-secondary transition-colors text-muted-foreground hover:text-foreground relative">
+                  <Bell className="w-4 h-4" />
+                  {unreadCount > 0 && (
+                    <span className="absolute top-1 right-1 min-w-[16px] h-4 rounded-full bg-critical text-critical-foreground text-[10px] font-bold flex items-center justify-center px-1">
+                      {unreadCount > 9 ? "9+" : unreadCount}
+                    </span>
+                  )}
+                </button>
+              </PopoverTrigger>
+              <PopoverContent className="w-80 p-0" align="end" sideOffset={8}>
+                <div className="flex items-center justify-between px-4 py-3 border-b border-border">
+                  <h4 className="text-sm font-semibold">Notifications</h4>
+                  <div className="flex gap-1">
+                    <button onClick={markAllRead} className="p-1 rounded hover:bg-secondary text-muted-foreground hover:text-foreground transition-colors" title="Mark all read">
+                      <CheckCheck className="w-3.5 h-3.5" />
+                    </button>
+                    <button onClick={clearNotifications} className="p-1 rounded hover:bg-secondary text-muted-foreground hover:text-foreground transition-colors" title="Clear all">
+                      <Trash2 className="w-3.5 h-3.5" />
+                    </button>
+                  </div>
+                </div>
+                <ScrollArea className="max-h-72">
+                  {notifications.length === 0 ? (
+                    <p className="text-xs text-muted-foreground text-center py-8">No notifications</p>
+                  ) : (
+                    notifications.map((n) => (
+                      <div key={n.id} className={`flex items-start gap-2.5 px-4 py-2.5 border-b border-border/50 last:border-0 ${!n.read ? "bg-primary/5" : ""}`}>
+                        {severityIcon(n.type)}
+                        <div className="flex-1 min-w-0">
+                          <p className="text-xs leading-relaxed">{n.message}</p>
+                          <p className="text-[10px] text-muted-foreground mt-0.5">{timeAgo(n.timestamp)}</p>
+                        </div>
+                      </div>
+                    ))
+                  )}
+                </ScrollArea>
+              </PopoverContent>
+            </Popover>
           </div>
         </header>
         <div className="flex-1 overflow-auto p-6">{children}</div>
