@@ -29,6 +29,8 @@ const App = () => (
             <Route path="/requests" element={<ServiceRequests />} />
             <Route path="/assets" element={<Assets />} />
             <Route path="/copilot" element={<AICopilot />} />
+            <Route path="/digital-twin" element={<DigitalTwin />} />
+            <Route path="/autopilot" element={<Autopilot />} />
             <Route path="/admin" element={<Admin />} />
             <Route path="*" element={<NotFound />} />
           </Routes>
