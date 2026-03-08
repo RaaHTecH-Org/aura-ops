@@ -1,4 +1,4 @@
-import { createContext, useContext, useState, useEffect, useCallback, ReactNode, useRef } from "react";
+import { createContext, useContext, useState, useEffect, useCallback, useMemo, ReactNode, useRef } from "react";
 import { toast } from "sonner";
 
 export interface SimNotification {
@@ -9,10 +9,13 @@ export interface SimNotification {
   read: boolean;
 }
 
+type HealthStatus = "healthy" | "degraded" | "incident";
+
 interface SimulationContextType {
   notifications: SimNotification[];
   unreadCount: number;
   isSimulating: boolean;
+  serviceOverrides: Record<string, HealthStatus>;
   toggleSimulation: () => void;
   markAllRead: () => void;
   clearNotifications: () => void;
@@ -44,12 +47,52 @@ const seedNotifications: SimNotification[] = [
   { id: "seed-3", type: "critical", message: "Entra ID — authentication failures above baseline", timestamp: new Date(Date.now() - 900000), read: true },
 ];
 
+// Keyword → serviceId mapping for Digital Twin overrides
+const keywordServiceMap: { keywords: string[]; serviceId: string }[] = [
+  { keywords: ["VPN"], serviceId: "vpn-gw" },
+  { keywords: ["Entra"], serviceId: "entra-id" },
+  { keywords: ["Exchange"], serviceId: "exchange" },
+  { keywords: ["SQL", "DTU"], serviceId: "db-cluster" },
+  { keywords: ["Defender"], serviceId: "defender" },
+  { keywords: ["SharePoint"], serviceId: "sharepoint" },
+  { keywords: ["Storage", "Cache"], serviceId: "azure-east" },
+  { keywords: ["Internal Apps"], serviceId: "internal-apps" },
+  { keywords: ["Azure East"], serviceId: "azure-east" },
+];
+
+function deriveServiceOverrides(notifications: SimNotification[]): Record<string, HealthStatus> {
+  const overrides: Record<string, HealthStatus> = {};
+  // Only consider recent unresolved notifications (last 10)
+  const recent = notifications.slice(0, 15);
+
+  for (const notif of recent) {
+    if (notif.type === "success" || notif.type === "info") continue;
+
+    for (const mapping of keywordServiceMap) {
+      if (mapping.keywords.some((kw) => notif.message.includes(kw))) {
+        const status: HealthStatus = notif.type === "critical" ? "incident" : "degraded";
+        // Don't downgrade an existing incident to degraded
+        if (!overrides[mapping.serviceId] || status === "incident") {
+          overrides[mapping.serviceId] = status;
+        }
+      }
+    }
+  }
+
+  return overrides;
+}
+
 export function SimulationProvider({ children }: { children: ReactNode }) {
   const [notifications, setNotifications] = useState<SimNotification[]>(seedNotifications);
   const [isSimulating, setIsSimulating] = useState(false);
   const intervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
 
   const unreadCount = notifications.filter((n) => !n.read).length;
+
+  const serviceOverrides = useMemo(
+    () => (isSimulating ? deriveServiceOverrides(notifications) : {}),
+    [notifications, isSimulating],
+  );
 
   const toggleSimulation = useCallback(() => setIsSimulating((p) => !p), []);
   const markAllRead = useCallback(() => setNotifications((prev) => prev.map((n) => ({ ...n, read: true }))), []);
@@ -95,7 +138,7 @@ export function SimulationProvider({ children }: { children: ReactNode }) {
   }, [isSimulating]);
 
   return (
-    <SimulationContext.Provider value={{ notifications, unreadCount, isSimulating, toggleSimulation, markAllRead, clearNotifications }}>
+    <SimulationContext.Provider value={{ notifications, unreadCount, isSimulating, serviceOverrides, toggleSimulation, markAllRead, clearNotifications }}>
       {children}
     </SimulationContext.Provider>
   );

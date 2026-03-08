@@ -1,9 +1,10 @@
 import { useState, useEffect, useCallback, useMemo } from "react";
 import { useNavigate } from "react-router-dom";
-import { X, AlertTriangle, CheckCircle2, AlertCircle, HelpCircle, Play, Pause, Clock, Network, Shield, Server, Activity } from "lucide-react";
+import { X, AlertTriangle, CheckCircle2, AlertCircle, HelpCircle, Play, Pause, Clock, Network, Shield, Server, Activity, Radio } from "lucide-react";
 import { Slider } from "@/components/ui/slider";
 import { Button } from "@/components/ui/button";
 import { useIsMobile } from "@/hooks/use-mobile";
+import { useSimulation } from "@/hooks/use-simulation";
 
 type HealthStatus = "healthy" | "degraded" | "incident" | "unknown";
 
@@ -129,7 +130,28 @@ export default function DigitalTwin() {
   const navigate = useNavigate();
   const isMobile = useIsMobile();
 
-  const nodes = useMemo(() => getNodesAtHour(hour), [hour]);
+  const { isSimulating, serviceOverrides } = useSimulation();
+
+  const nodes = useMemo(() => {
+    const base = getNodesAtHour(hour);
+    if (!isSimulating || Object.keys(serviceOverrides).length === 0) return base;
+    // Merge simulation overrides into nodes
+    return base.map((node) => {
+      const override = serviceOverrides[node.id];
+      if (!override) return node;
+      // Don't downgrade a time-travel incident to sim degraded
+      if (node.status === "incident" && override === "degraded") return node;
+      return {
+        ...node,
+        status: override,
+        activeIncident: override === "incident"
+          ? "Live simulation — active incident detected"
+          : override === "degraded"
+            ? "Live simulation — performance degradation"
+            : node.activeIncident,
+      };
+    });
+  }, [hour, isSimulating, serviceOverrides]);
 
   const stats = useMemo(() => {
     const total = nodes.length;
@@ -169,9 +191,17 @@ export default function DigitalTwin() {
           </h1>
           <p className="text-xs text-muted-foreground mt-1">Interactive infrastructure topology with time-travel analysis</p>
         </div>
-        <div className="flex items-center gap-2 text-[11px] text-muted-foreground">
-          <Clock className="w-3.5 h-3.5" />
-          Viewing: {formatHour(hour)}
+        <div className="flex items-center gap-3">
+          {isSimulating && (
+            <span className="flex items-center gap-1.5 text-[10px] bg-primary/15 text-primary px-2.5 py-1 rounded-full font-medium">
+              <Radio className="w-2.5 h-2.5 animate-pulse" />
+              Live Mode
+            </span>
+          )}
+          <span className="flex items-center gap-2 text-[11px] text-muted-foreground">
+            <Clock className="w-3.5 h-3.5" />
+            {formatHour(hour)}
+          </span>
         </div>
       </div>
 

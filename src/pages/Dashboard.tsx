@@ -42,6 +42,7 @@ import {
   Legend,
 } from "recharts";
 import ServiceHealthMap from "@/components/ServiceHealthMap";
+import LiveActivityFeed from "@/components/LiveActivityFeed";
 
 const statCards = [
   { label: "Open Incidents", value: dashboardStats.openIncidents, icon: AlertTriangle, color: "text-warning", trend: "+3", up: true },
@@ -280,6 +281,9 @@ export default function Dashboard() {
           ))}
         </div>
       </div>
+
+      {/* Live Activity Feed */}
+      <LiveActivityFeed />
 
       <div className="grid lg:grid-cols-2 gap-6">
         {/* Recent Incidents */}
