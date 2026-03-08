@@ -181,6 +181,49 @@ export default function DigitalTwin() {
     return () => clearInterval(interval);
   }, [playing]);
 
+  // Keyboard shortcuts
+  useEffect(() => {
+    const handler = (e: KeyboardEvent) => {
+      if (e.target instanceof HTMLInputElement || e.target instanceof HTMLTextAreaElement) return;
+      switch (e.key) {
+        case "ArrowRight":
+          e.preventDefault();
+          setHour(h => Math.min(23, h + 1));
+          setPlaying(false);
+          break;
+        case "ArrowLeft":
+          e.preventDefault();
+          setHour(h => Math.max(0, h - 1));
+          setPlaying(false);
+          break;
+        case " ":
+          e.preventDefault();
+          setPlaying(p => !p);
+          break;
+        case "Escape":
+          setSelected(null);
+          break;
+      }
+    };
+    window.addEventListener("keydown", handler);
+    return () => window.removeEventListener("keydown", handler);
+  }, []);
+
+  // Get recent notifications affecting the selected node
+  const nodeEvents = useMemo(() => {
+    if (!selected) return [];
+    return notifications
+      .filter((n) => {
+        for (const mapping of keywordServiceMap) {
+          if (mapping.serviceId === selected.id && mapping.keywords.some((kw) => n.message.includes(kw))) {
+            return true;
+          }
+        }
+        return false;
+      })
+      .slice(0, 5);
+  }, [selected, notifications]);
+
   const getNodePos = useCallback((id: string) => {
     const node = nodes.find(n => n.id === id);
     return node ? { x: node.x, y: node.y } : { x: 0, y: 0 };
