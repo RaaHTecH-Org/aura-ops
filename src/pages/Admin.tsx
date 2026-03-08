@@ -79,7 +79,7 @@ export default function Admin() {
           </div>
           <ChevronRight className="w-4 h-4 text-primary/50" />
           <div className="bg-primary/10 border border-primary/20 rounded-lg px-4 py-2.5 text-center">
-            <p className="text-xs font-semibold text-primary">Workflow Command Center</p>
+            <p className="text-xs font-semibold text-primary">Raahtech Command Center</p>
             <p className="text-[10px] text-muted-foreground mt-0.5">Incidents · Requests · Assets</p>
           </div>
           <ChevronRight className="w-4 h-4 text-primary/50" />

@@ -83,13 +83,10 @@ export default function AppLayout({ children }: { children: ReactNode }) {
           </div>
           <div className="flex-1 min-w-0">
             <h1 className="text-sm font-semibold text-sidebar-accent-foreground leading-none tracking-tight">
-              Workflow Command
+              Raahtech Command
             </h1>
             <p className="text-[10px] text-sidebar-foreground mt-0.5 uppercase tracking-widest">
               Center
-            </p>
-            <p className="text-[9px] text-muted-foreground/60 mt-0.5 tracking-wide">
-              by Raahtech
             </p>
           </div>
           <button
@@ -149,7 +146,7 @@ export default function AppLayout({ children }: { children: ReactNode }) {
             </div>
             <div className="text-[11px] text-primary flex items-center gap-1.5 font-medium">
               <span className="w-1.5 h-1.5 rounded-full bg-primary shrink-0" />
-              Workflow Command Center
+              Raahtech Command Center
             </div>
             <div className="flex justify-center">
               <ChevronRight className="w-3 h-3 text-primary/40 rotate-90" />
@@ -186,11 +183,11 @@ export default function AppLayout({ children }: { children: ReactNode }) {
           </button>
           <div className="flex-1 flex items-center gap-3">
             <div className="hidden lg:flex items-center gap-2 text-sm">
-              <span className="text-muted-foreground">WCC</span>
+              <span className="text-muted-foreground">RCC</span>
               <ChevronRight className="w-3.5 h-3.5 text-muted-foreground/50" />
               <span className="font-medium">{currentPage?.label || "Dashboard"}</span>
             </div>
-            <span className="lg:hidden text-sm font-medium">Workflow Command Center</span>
+            <span className="lg:hidden text-sm font-medium">Raahtech Command Center</span>
           </div>
           <div className="hidden md:flex items-center gap-1.5 text-[11px] text-muted-foreground mr-2">
             <span className="w-1.5 h-1.5 rounded-full bg-success animate-pulse" />
