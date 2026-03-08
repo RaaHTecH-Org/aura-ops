@@ -175,6 +175,7 @@ export default function AppLayout({ children }: { children: ReactNode }) {
               </p>
             </div>
           </div>
+          <p className="text-[9px] text-muted-foreground/40 mt-2.5 text-center tracking-wide">© {new Date().getFullYear()} Raahtech. All rights reserved.</p>
         </div>
       </aside>
 
