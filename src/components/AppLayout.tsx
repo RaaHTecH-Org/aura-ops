@@ -186,7 +186,7 @@ export default function AppLayout({ children }: { children: ReactNode }) {
           </button>
           <div className="flex-1 flex items-center gap-3">
             <div className="hidden lg:flex items-center gap-2 text-sm">
-              <span className="text-muted-foreground">WCC</span>
+              <span className="text-muted-foreground">RCC</span>
               <ChevronRight className="w-3.5 h-3.5 text-muted-foreground/50" />
               <span className="font-medium">{currentPage?.label || "Dashboard"}</span>
             </div>
