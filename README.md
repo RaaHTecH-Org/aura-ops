@@ -25,7 +25,7 @@ AI-assisted enterprise IT operations platform purpose-built for Microsoft enviro
 ```
 Microsoft Enterprise (Azure, Entra ID, M365, Defender, Intune)
         ↓
-Workflow Command Center (this platform)
+Raahtech Command Center (this platform)
         ↓
 AI Insights & Automation (Copilot, Autopilot, Digital Twin)
 ```

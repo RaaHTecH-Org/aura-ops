@@ -190,7 +190,7 @@ export default function AppLayout({ children }: { children: ReactNode }) {
               <ChevronRight className="w-3.5 h-3.5 text-muted-foreground/50" />
               <span className="font-medium">{currentPage?.label || "Dashboard"}</span>
             </div>
-            <span className="lg:hidden text-sm font-medium">Workflow Command Center</span>
+            <span className="lg:hidden text-sm font-medium">Raahtech Command Center</span>
           </div>
           <div className="hidden md:flex items-center gap-1.5 text-[11px] text-muted-foreground mr-2">
             <span className="w-1.5 h-1.5 rounded-full bg-success animate-pulse" />
