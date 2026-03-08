@@ -43,15 +43,25 @@ export default function AppLayout({ children }: { children: ReactNode }) {
   const location = useLocation();
   const [sidebarOpen, setSidebarOpen] = useState(false);
 
+  const { notifications, unreadCount, isSimulating, toggleSimulation, markAllRead, clearNotifications } = useSimulation();
+
   const currentPage = navItems.find((n) => n.path === location.pathname);
 
-  return (
-    <div className="flex h-screen overflow-hidden">
-      {sidebarOpen && (
-        <div
-          className="fixed inset-0 z-40 bg-background/80 backdrop-blur-sm lg:hidden"
-          onClick={() => setSidebarOpen(false)}
-        />
+  const severityIcon = (type: SimNotification["type"]) => {
+    switch (type) {
+      case "critical": return <ShieldAlert className="w-3.5 h-3.5 text-critical shrink-0" />;
+      case "warning": return <AlertTriangle className="w-3.5 h-3.5 text-warning shrink-0" />;
+      case "success": return <CircleCheck className="w-3.5 h-3.5 text-success shrink-0" />;
+      default: return <Info className="w-3.5 h-3.5 text-info shrink-0" />;
+    }
+  };
+
+  const timeAgo = (date: Date) => {
+    const s = Math.floor((Date.now() - date.getTime()) / 1000);
+    if (s < 60) return `${s}s ago`;
+    if (s < 3600) return `${Math.floor(s / 60)}m ago`;
+    return `${Math.floor(s / 3600)}h ago`;
+  };
       )}
 
       <aside
