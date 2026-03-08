@@ -61,7 +61,15 @@ export default function AppLayout({ children }: { children: ReactNode }) {
     if (s < 60) return `${s}s ago`;
     if (s < 3600) return `${Math.floor(s / 60)}m ago`;
     return `${Math.floor(s / 3600)}h ago`;
-  };
+
+
+  return (
+    <div className="flex h-screen overflow-hidden">
+      {sidebarOpen && (
+        <div
+          className="fixed inset-0 z-40 bg-background/80 backdrop-blur-sm lg:hidden"
+          onClick={() => setSidebarOpen(false)}
+        />
       )}
 
       <aside
