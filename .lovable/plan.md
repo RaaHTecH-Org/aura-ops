@@ -1,85 +1,39 @@
 
 
-## Plan: Build Digital Twin & Autopilot Pages
+## Plan: Live Activity Log Widget + Simulation-Connected Digital Twin
 
-### Summary
-Create two new pages — **Digital Twin** (interactive infrastructure topology with time-travel) and **Autopilot** (AI auto-remediation workflows) — then add them to routing and navigation. The existing `ServiceHealthMap.tsx` component provides the foundational pattern for the topology graph.
+### 1. Add Live Activity Log widget to Dashboard (`src/pages/Dashboard.tsx`)
 
----
+- Import `useSimulation` hook
+- Add a new card between "AI Recommended Actions" and the Recent Incidents grid
+- Widget renders a scrollable list (ScrollArea, max ~250px) of `notifications` from the simulation context
+- Each entry: severity icon (color-coded), message text, relative timestamp ("5s ago")
+- Header shows "Live Activity Feed" with a pulsing "Live" badge when simulation is active, and event count
+- Empty state: "Enable Live Demo Mode to see real-time events"
+- Auto-scrolls to top as new events arrive (newest first — already the array order)
 
-### 1. Create `src/pages/DigitalTwin.tsx`
+### 2. Connect simulation engine to Digital Twin (`src/pages/DigitalTwin.tsx`)
 
-**Infrastructure Topology (based on ServiceHealthMap pattern):**
-- SVG-based graph with 9 nodes: Azure East/West, Entra ID, VPN Gateway, Exchange, SharePoint, Defender, Azure SQL, Internal Apps
-- Connection lines color-coded by health (healthy=primary, degraded=warning dashed, incident=critical dashed)
-- Animated pulse rings on degraded/incident nodes
-- Click node → detail panel slides in (status, incidents, affected systems, actions)
-- "Run Diagnostics" button navigates to `/autopilot?incident=INC-XXXX`
+- Import `useSimulation` hook
+- Map simulation event messages to node ID overrides (e.g., message containing "VPN" → `vpn-gw` degraded, "Entra" → `entra-id`, etc.)
+- When `isSimulating` is true, derive a `simOverrides` map from recent notifications and merge it into the node state alongside time-travel snapshots
+- When simulation is off, behavior reverts to time-travel-only mode
+- Add a small indicator badge on the page showing "Live Mode Active" when simulating
 
-**Node-to-Incident Mapping:**
-- `vpn-gw` → INC-2001, `entra-id` → INC-2002, `exchange` → INC-2003, `db-cluster` → INC-2004, `defender` → INC-2005, `storage-cluster` → INC-2006
+### 3. Expand simulation context (`src/hooks/use-simulation.tsx`)
 
-**Time-Travel Slider:**
-- 24-hour timeline slider (0-23h) at bottom
-- Predefined snapshots: states change at hours 0, 6, 8, 12, 18 (e.g., VPN degrades at h6, Entra incident at h8)
-- Play/pause auto-advance button
-- Current timestamp display
+- Export a `serviceOverrides` computed value: `Record<string, HealthStatus>` derived from the latest notification per service keyword
+- This lets Digital Twin consume structured overrides without parsing messages itself
+- Mapping: "VPN" → `vpn-gw`, "Entra" → `entra-id`, "Exchange" → `exchange`, "SQL"/"DTU" → `db-cluster`, "Defender" → `defender`, "SharePoint" → `sharepoint`, "Storage"/"Cache" → `azure-east`, "Internal Apps" → `internal-apps`
 
-**Summary Stats Bar:**
-- Total services, healthy, degraded, incidents counts — derived from current time-travel snapshot
+### 4. Verify Digital Twin → Autopilot navigation
 
-**Health Propagation:**
-- When parent node (e.g., Entra ID) is incident, dependent children show warning-style borders
-
----
-
-### 2. Create `src/pages/Autopilot.tsx`
-
-**Autopilot Incidents (6 mock incidents):**
-- INC-2001: Azure VPN Gateway tunnel failure
-- INC-2002: Microsoft Entra ID auth latency
-- INC-2003: Exchange Online delivery delays
-- INC-2004: Azure SQL high DTU
-- INC-2005: Defender sensor offline
-- INC-2006: Azure Cache connectivity
-
-Each with severity, affected system, confidence score, suggested actions, runbook steps, estimated resolution time.
-
-**Incident List:**
-- Table with columns: ID, title, severity, system, confidence (progress bar), status
-- Click to select → opens detail panel
-- `useSearchParams` reads `?incident=INC-XXXX` on mount to auto-select
-
-**AI Decision Pipeline Visualization:**
-- 5-step horizontal workflow: Detect → Analyze → Recommend → Execute → Verify
-- Each step: completed (green check), active (pulsing primary), pending (muted)
-- Connected by arrows between steps
-
-**Detail Panel:**
-- Full incident info, AI analysis, confidence breakdown
-- "Execute Runbook" button → animated step-by-step execution simulation with progress and checkmarks
-
-**Summary Cards:**
-- Active incidents, auto-resolved today, avg resolution time, AI confidence average
-
----
-
-### 3. Modify `src/App.tsx`
-- Import DigitalTwin and Autopilot
-- Add routes: `/digital-twin` and `/autopilot`
-
-### 4. Modify `src/components/AppLayout.tsx`
-- Add `Network` icon import for Digital Twin, `Cpu` icon for Autopilot
-- Add two nav items under "Intelligence" section:
-  - `/digital-twin` → "Digital Twin"
-  - `/autopilot` → "AI Autopilot"
-
----
+- Ensure "Run Diagnostics" button on degraded/incident nodes with `incidentId` navigates to `/autopilot?incident=INC-XXXX`
+- Already implemented in current code — no changes needed, just verification during testing
 
 ### Technical Notes
-- Reuses existing design patterns from `ServiceHealthMap.tsx` (SVG topology, statusConfig, detail panel)
-- Uses existing CSS classes: `section-header`, `section-title`, `status-badge`, `animate-slide-in`
-- Slider uses Radix `Slider` component already installed
-- Mobile responsive: detail panels stack below on small screens via `useIsMobile()`
-- No new dependencies needed
+- No new dependencies
+- Uses existing `ScrollArea`, `useSimulation`, severity icon patterns from AppLayout
+- Dashboard widget is read-only — displays notifications array from context
+- Digital Twin merges sim overrides only when `isSimulating === true`, preserving time-travel as the default mode
 
