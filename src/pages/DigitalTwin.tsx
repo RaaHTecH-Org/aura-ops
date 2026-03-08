@@ -1,9 +1,10 @@
 import { useState, useEffect, useCallback, useMemo } from "react";
 import { useNavigate } from "react-router-dom";
-import { X, AlertTriangle, CheckCircle2, AlertCircle, HelpCircle, Play, Pause, Clock, Network, Shield, Server, Activity } from "lucide-react";
+import { X, AlertTriangle, CheckCircle2, AlertCircle, HelpCircle, Play, Pause, Clock, Network, Shield, Server, Activity, Radio } from "lucide-react";
 import { Slider } from "@/components/ui/slider";
 import { Button } from "@/components/ui/button";
 import { useIsMobile } from "@/hooks/use-mobile";
+import { useSimulation } from "@/hooks/use-simulation";
 
 type HealthStatus = "healthy" | "degraded" | "incident" | "unknown";
 
