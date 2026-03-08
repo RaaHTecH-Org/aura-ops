@@ -16,7 +16,17 @@ import {
   Search,
   ChevronRight,
   Zap,
+  Radio,
+  CheckCheck,
+  Trash2,
+  Info,
+  ShieldAlert,
+  CircleCheck,
 } from "lucide-react";
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
+import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
+import { ScrollArea } from "@/components/ui/scroll-area";
+import { useSimulation, SimNotification } from "@/hooks/use-simulation";
 
 const navItems = [
   { path: "/", label: "Dashboard", icon: LayoutDashboard },
