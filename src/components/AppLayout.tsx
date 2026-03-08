@@ -6,6 +6,8 @@ import {
   FileText,
   Monitor,
   Bot,
+  Network,
+  Cpu,
   Settings,
   Menu,
   X,
