@@ -129,9 +129,20 @@ export default function DigitalTwin() {
   const [playing, setPlaying] = useState(false);
   const [selected, setSelected] = useState<ServiceNode | null>(null);
   const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
   const isMobile = useIsMobile();
+  const containerRef = useRef<HTMLDivElement>(null);
 
-  const { isSimulating, serviceOverrides } = useSimulation();
+  const { isSimulating, serviceOverrides, notifications } = useSimulation();
+
+  // Auto-select node from URL query param
+  useEffect(() => {
+    const nodeId = searchParams.get("node");
+    if (nodeId) {
+      const node = baseNodes.find(n => n.id === nodeId);
+      if (node) setSelected(node);
+    }
+  }, [searchParams]);
 
   const nodes = useMemo(() => {
     const base = getNodesAtHour(hour);
