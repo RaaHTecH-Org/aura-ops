@@ -191,9 +191,17 @@ export default function DigitalTwin() {
           </h1>
           <p className="text-xs text-muted-foreground mt-1">Interactive infrastructure topology with time-travel analysis</p>
         </div>
-        <div className="flex items-center gap-2 text-[11px] text-muted-foreground">
-          <Clock className="w-3.5 h-3.5" />
-          Viewing: {formatHour(hour)}
+        <div className="flex items-center gap-3">
+          {isSimulating && (
+            <span className="flex items-center gap-1.5 text-[10px] bg-primary/15 text-primary px-2.5 py-1 rounded-full font-medium">
+              <Radio className="w-2.5 h-2.5 animate-pulse" />
+              Live Mode
+            </span>
+          )}
+          <span className="flex items-center gap-2 text-[11px] text-muted-foreground">
+            <Clock className="w-3.5 h-3.5" />
+            {formatHour(hour)}
+          </span>
         </div>
       </div>
 

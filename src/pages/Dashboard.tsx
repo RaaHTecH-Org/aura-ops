@@ -282,6 +282,9 @@ export default function Dashboard() {
         </div>
       </div>
 
+      {/* Live Activity Feed */}
+      <LiveActivityFeed />
+
       <div className="grid lg:grid-cols-2 gap-6">
         {/* Recent Incidents */}
         <div className="bg-card border border-border rounded-lg">
