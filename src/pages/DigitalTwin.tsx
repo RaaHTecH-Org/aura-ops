@@ -464,6 +464,33 @@ export default function DigitalTwin() {
                 </div>
               )}
 
+              {/* Mini Event Log */}
+              {nodeEvents.length > 0 && (
+                <div>
+                  <p className="text-muted-foreground mb-1.5">Recent Events</p>
+                  <div className="space-y-1.5">
+                    {nodeEvents.map((evt) => {
+                      const icon = evt.type === "critical"
+                        ? <ShieldAlert className="w-3 h-3 text-critical shrink-0" />
+                        : evt.type === "warning"
+                          ? <AlertTriangle className="w-3 h-3 text-warning shrink-0" />
+                          : evt.type === "success"
+                            ? <CheckCircle2 className="w-3 h-3 text-success shrink-0" />
+                            : <Bell className="w-3 h-3 text-info shrink-0" />;
+                      const secs = Math.floor((Date.now() - evt.timestamp.getTime()) / 1000);
+                      const ago = secs < 60 ? `${secs}s` : `${Math.floor(secs / 60)}m`;
+                      return (
+                        <div key={evt.id} className="flex items-start gap-2 text-[10px] text-foreground/70">
+                          {icon}
+                          <span className="flex-1 leading-relaxed">{evt.message}</span>
+                          <span className="text-muted-foreground/60 font-mono shrink-0">{ago}</span>
+                        </div>
+                      );
+                    })}
+                  </div>
+                </div>
+              )}
+
               {selected.incidentId && selected.status !== "healthy" && (
                 <Button
                   className="w-full mt-2"
