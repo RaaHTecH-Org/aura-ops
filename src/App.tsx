@@ -9,6 +9,8 @@ import Incidents from "@/pages/Incidents";
 import ServiceRequests from "@/pages/ServiceRequests";
 import Assets from "@/pages/Assets";
 import AICopilot from "@/pages/AICopilot";
+import DigitalTwin from "@/pages/DigitalTwin";
+import Autopilot from "@/pages/Autopilot";
 import Admin from "@/pages/Admin";
 import NotFound from "./pages/NotFound";
 
@@ -27,6 +29,8 @@ const App = () => (
             <Route path="/requests" element={<ServiceRequests />} />
             <Route path="/assets" element={<Assets />} />
             <Route path="/copilot" element={<AICopilot />} />
+            <Route path="/digital-twin" element={<DigitalTwin />} />
+            <Route path="/autopilot" element={<Autopilot />} />
             <Route path="/admin" element={<Admin />} />
             <Route path="*" element={<NotFound />} />
           </Routes>

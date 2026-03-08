@@ -6,6 +6,8 @@ import {
   FileText,
   Monitor,
   Bot,
+  Network,
+  Cpu,
   Settings,
   Menu,
   X,
@@ -22,6 +24,8 @@ const navItems = [
   { path: "/requests", label: "Service Requests", icon: FileText },
   { path: "/assets", label: "Assets", icon: Monitor },
   { path: "/copilot", label: "AI Copilot", icon: Bot },
+  { path: "/digital-twin", label: "Digital Twin", icon: Network },
+  { path: "/autopilot", label: "AI Autopilot", icon: Cpu },
   { path: "/admin", label: "Admin", icon: Settings },
 ];
 
