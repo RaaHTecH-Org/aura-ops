@@ -88,9 +88,6 @@ export default function AppLayout({ children }: { children: ReactNode }) {
             <p className="text-[10px] text-sidebar-foreground mt-0.5 uppercase tracking-widest">
               Center
             </p>
-            <p className="text-[9px] text-muted-foreground/60 mt-0.5 tracking-wide">
-              by Raahtech
-            </p>
           </div>
           <button
             className="ml-auto lg:hidden text-sidebar-foreground"
