@@ -3,6 +3,7 @@ import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
+import { SimulationProvider } from "@/hooks/use-simulation";
 import AppLayout from "@/components/AppLayout";
 import Dashboard from "@/pages/Dashboard";
 import Incidents from "@/pages/Incidents";
@@ -19,6 +20,7 @@ const queryClient = new QueryClient();
 const App = () => (
   <QueryClientProvider client={queryClient}>
     <TooltipProvider>
+      <SimulationProvider>
       <Toaster />
       <Sonner />
       <BrowserRouter>
