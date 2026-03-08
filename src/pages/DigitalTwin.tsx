@@ -372,12 +372,26 @@ export default function DigitalTwin() {
               />
               <span className="text-xs font-mono text-muted-foreground w-20 text-right shrink-0">{formatHour(hour)}</span>
             </div>
-            <div className="flex justify-between text-[9px] text-muted-foreground/60 px-1">
-              {[0, 6, 8, 12, 18, 23].map(h => (
-                <button key={h} onClick={() => { setHour(h); setPlaying(false); }} className="hover:text-foreground transition-colors cursor-pointer">
-                  {formatHour(h)}
-                </button>
-              ))}
+            <div className="flex items-center justify-between text-[9px] text-muted-foreground/60 px-1">
+              <div className="flex justify-between flex-1">
+                {[0, 6, 8, 12, 18, 23].map(h => (
+                  <button key={h} onClick={() => { setHour(h); setPlaying(false); }} className="hover:text-foreground transition-colors cursor-pointer">
+                    {formatHour(h)}
+                  </button>
+                ))}
+              </div>
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <button className="ml-3 p-1 rounded hover:bg-secondary text-muted-foreground/40 hover:text-muted-foreground transition-colors">
+                    <Keyboard className="w-3.5 h-3.5" />
+                  </button>
+                </TooltipTrigger>
+                <TooltipContent side="top" className="text-[11px] leading-relaxed">
+                  <p><kbd className="px-1 py-0.5 bg-secondary rounded text-[10px] font-mono">←</kbd> <kbd className="px-1 py-0.5 bg-secondary rounded text-[10px] font-mono">→</kbd> Step hours</p>
+                  <p><kbd className="px-1 py-0.5 bg-secondary rounded text-[10px] font-mono">Space</kbd> Play/pause</p>
+                  <p><kbd className="px-1 py-0.5 bg-secondary rounded text-[10px] font-mono">Esc</kbd> Deselect node</p>
+                </TooltipContent>
+              </Tooltip>
             </div>
           </div>
         </div>
