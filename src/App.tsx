@@ -9,6 +9,8 @@ import Incidents from "@/pages/Incidents";
 import ServiceRequests from "@/pages/ServiceRequests";
 import Assets from "@/pages/Assets";
 import AICopilot from "@/pages/AICopilot";
+import DigitalTwin from "@/pages/DigitalTwin";
+import Autopilot from "@/pages/Autopilot";
 import Admin from "@/pages/Admin";
 import NotFound from "./pages/NotFound";
 
