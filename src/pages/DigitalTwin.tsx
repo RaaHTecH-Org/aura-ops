@@ -130,7 +130,28 @@ export default function DigitalTwin() {
   const navigate = useNavigate();
   const isMobile = useIsMobile();
 
-  const nodes = useMemo(() => getNodesAtHour(hour), [hour]);
+  const { isSimulating, serviceOverrides } = useSimulation();
+
+  const nodes = useMemo(() => {
+    const base = getNodesAtHour(hour);
+    if (!isSimulating || Object.keys(serviceOverrides).length === 0) return base;
+    // Merge simulation overrides into nodes
+    return base.map((node) => {
+      const override = serviceOverrides[node.id];
+      if (!override) return node;
+      // Don't downgrade a time-travel incident to sim degraded
+      if (node.status === "incident" && override === "degraded") return node;
+      return {
+        ...node,
+        status: override,
+        activeIncident: override === "incident"
+          ? "Live simulation — active incident detected"
+          : override === "degraded"
+            ? "Live simulation — performance degradation"
+            : node.activeIncident,
+      };
+    });
+  }, [hour, isSimulating, serviceOverrides]);
 
   const stats = useMemo(() => {
     const total = nodes.length;
