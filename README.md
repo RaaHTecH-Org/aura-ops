@@ -1,73 +1,67 @@
-# Welcome to your Lovable project
+# Raahtech Workflow Command Center
 
-## Project info
+AI-assisted enterprise IT operations platform purpose-built for Microsoft environments. Unifies incident management, service requests, asset tracking, and AI-driven automation into a single command center.
 
-**URL**: https://lovable.dev/projects/REPLACE_WITH_PROJECT_ID
+## Current Stage
 
-## How can I edit this code?
+**MVP / Demo-Ready Prototype** — fully functional UI with mock data, real-time simulation mode, and interactive visualizations. Ready for stakeholder demos and investor presentations.
 
-There are several ways of editing your application.
+## Features
 
-**Use Lovable**
+| Module | Description |
+|---|---|
+| **Dashboard** | Operational overview with KPIs, incident trends, system health, and AI insights |
+| **Incidents** | Incident triage with priority, status, AI summaries, and team assignment |
+| **Service Requests** | Workflow-stage tracking, approval status, and department routing |
+| **Assets** | IT asset inventory with compliance state, lifecycle stage, and location |
+| **AI Copilot** | Conversational AI assistant for operational queries and recommendations |
+| **Digital Twin** | Interactive infrastructure topology with 24-hour time-travel slider and health propagation |
+| **AI Autopilot** | Automated incident remediation with 5-step decision pipeline and runbook execution |
+| **Real-Time Simulation** | Live demo mode that generates random service health changes and notifications |
+| **Notification System** | Bell icon dropdown with severity-coded alerts, timestamps, and read status |
 
-Simply visit the [Lovable Project](https://lovable.dev/projects/REPLACE_WITH_PROJECT_ID) and start prompting.
+## Architecture
 
-Changes made via Lovable will be committed automatically to this repo.
+```
+Microsoft Enterprise (Azure, Entra ID, M365, Defender, Intune)
+        ↓
+Workflow Command Center (this platform)
+        ↓
+AI Insights & Automation (Copilot, Autopilot, Digital Twin)
+```
 
-**Use your preferred IDE**
+- **Cloud**: Azure East/West US, Azure SQL, Azure Cache, Storage Clusters
+- **Identity**: Microsoft Entra ID (Azure AD)
+- **Productivity**: Exchange Online, SharePoint Online
+- **Security**: Microsoft Defender for Endpoint
+- **Network**: Azure VPN Gateway
 
-If you want to work locally using your own IDE, you can clone this repo and push changes. Pushed changes will also be reflected in Lovable.
+## Tech Stack
 
-The only requirement is having Node.js & npm installed - [install with nvm](https://github.com/nvm-sh/nvm#installing-and-updating)
+- **Framework**: React 18 + TypeScript
+- **Build**: Vite
+- **Styling**: Tailwind CSS + custom design system (dark theme, HSL tokens)
+- **Components**: shadcn/ui (Radix UI primitives)
+- **Charts**: Recharts
+- **Routing**: React Router v6
+- **State**: React Query, React Context
 
-Follow these steps:
+## DevOps
+
+- Built with [Lovable](https://lovable.dev) — AI-powered development platform
+- Auto-deployed on every change
+- GitHub integration for version control
+- No external backend required (mock data, client-side state)
+
+## Getting Started
 
 ```sh
-# Step 1: Clone the repository using the project's Git URL.
 git clone <YOUR_GIT_URL>
-
-# Step 2: Navigate to the project directory.
 cd <YOUR_PROJECT_NAME>
-
-# Step 3: Install the necessary dependencies.
-npm i
-
-# Step 4: Start the development server with auto-reloading and an instant preview.
+npm install
 npm run dev
 ```
 
-**Edit a file directly in GitHub**
+## License
 
-- Navigate to the desired file(s).
-- Click the "Edit" button (pencil icon) at the top right of the file view.
-- Make your changes and commit the changes.
-
-**Use GitHub Codespaces**
-
-- Navigate to the main page of your repository.
-- Click on the "Code" button (green button) near the top right.
-- Select the "Codespaces" tab.
-- Click on "New codespace" to launch a new Codespace environment.
-- Edit files directly within the Codespace and commit and push your changes once you're done.
-
-## What technologies are used for this project?
-
-This project is built with:
-
-- Vite
-- TypeScript
-- React
-- shadcn-ui
-- Tailwind CSS
-
-## How can I deploy this project?
-
-Simply open [Lovable](https://lovable.dev/projects/REPLACE_WITH_PROJECT_ID) and click on Share -> Publish.
-
-## Can I connect a custom domain to my Lovable project?
-
-Yes, you can!
-
-To connect a domain, navigate to Project > Settings > Domains and click Connect Domain.
-
-Read more here: [Setting up a custom domain](https://docs.lovable.dev/features/custom-domain#custom-domain)
+Proprietary — Raahtech
