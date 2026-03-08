@@ -47,8 +47,8 @@ const seedNotifications: SimNotification[] = [
   { id: "seed-3", type: "critical", message: "Entra ID — authentication failures above baseline", timestamp: new Date(Date.now() - 900000), read: true },
 ];
 
-// Keyword → serviceId mapping for Digital Twin overrides
-const keywordServiceMap: { keywords: string[]; serviceId: string }[] = [
+// Keyword → serviceId mapping for Digital Twin overrides (exported for reuse)
+export const keywordServiceMap: { keywords: string[]; serviceId: string }[] = [
   { keywords: ["VPN"], serviceId: "vpn-gw" },
   { keywords: ["Entra"], serviceId: "entra-id" },
   { keywords: ["Exchange"], serviceId: "exchange" },

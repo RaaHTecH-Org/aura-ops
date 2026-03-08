@@ -1,10 +1,11 @@
-import { useState, useEffect, useCallback, useMemo } from "react";
-import { useNavigate } from "react-router-dom";
-import { X, AlertTriangle, CheckCircle2, AlertCircle, HelpCircle, Play, Pause, Clock, Network, Shield, Server, Activity, Radio } from "lucide-react";
+import { useState, useEffect, useCallback, useMemo, useRef } from "react";
+import { useNavigate, useSearchParams } from "react-router-dom";
+import { X, AlertTriangle, CheckCircle2, AlertCircle, HelpCircle, Play, Pause, Clock, Network, Shield, Server, Activity, Radio, Keyboard, ShieldAlert, Bell } from "lucide-react";
 import { Slider } from "@/components/ui/slider";
 import { Button } from "@/components/ui/button";
+import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
 import { useIsMobile } from "@/hooks/use-mobile";
-import { useSimulation } from "@/hooks/use-simulation";
+import { useSimulation, keywordServiceMap, SimNotification } from "@/hooks/use-simulation";
 
 type HealthStatus = "healthy" | "degraded" | "incident" | "unknown";
 
@@ -128,9 +129,20 @@ export default function DigitalTwin() {
   const [playing, setPlaying] = useState(false);
   const [selected, setSelected] = useState<ServiceNode | null>(null);
   const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
   const isMobile = useIsMobile();
+  const containerRef = useRef<HTMLDivElement>(null);
 
-  const { isSimulating, serviceOverrides } = useSimulation();
+  const { isSimulating, serviceOverrides, notifications } = useSimulation();
+
+  // Auto-select node from URL query param
+  useEffect(() => {
+    const nodeId = searchParams.get("node");
+    if (nodeId) {
+      const node = baseNodes.find(n => n.id === nodeId);
+      if (node) setSelected(node);
+    }
+  }, [searchParams]);
 
   const nodes = useMemo(() => {
     const base = getNodesAtHour(hour);
@@ -168,6 +180,49 @@ export default function DigitalTwin() {
     }, 800);
     return () => clearInterval(interval);
   }, [playing]);
+
+  // Keyboard shortcuts
+  useEffect(() => {
+    const handler = (e: KeyboardEvent) => {
+      if (e.target instanceof HTMLInputElement || e.target instanceof HTMLTextAreaElement) return;
+      switch (e.key) {
+        case "ArrowRight":
+          e.preventDefault();
+          setHour(h => Math.min(23, h + 1));
+          setPlaying(false);
+          break;
+        case "ArrowLeft":
+          e.preventDefault();
+          setHour(h => Math.max(0, h - 1));
+          setPlaying(false);
+          break;
+        case " ":
+          e.preventDefault();
+          setPlaying(p => !p);
+          break;
+        case "Escape":
+          setSelected(null);
+          break;
+      }
+    };
+    window.addEventListener("keydown", handler);
+    return () => window.removeEventListener("keydown", handler);
+  }, []);
+
+  // Get recent notifications affecting the selected node
+  const nodeEvents = useMemo(() => {
+    if (!selected) return [];
+    return notifications
+      .filter((n) => {
+        for (const mapping of keywordServiceMap) {
+          if (mapping.serviceId === selected.id && mapping.keywords.some((kw) => n.message.includes(kw))) {
+            return true;
+          }
+        }
+        return false;
+      })
+      .slice(0, 5);
+  }, [selected, notifications]);
 
   const getNodePos = useCallback((id: string) => {
     const node = nodes.find(n => n.id === id);
@@ -317,12 +372,26 @@ export default function DigitalTwin() {
               />
               <span className="text-xs font-mono text-muted-foreground w-20 text-right shrink-0">{formatHour(hour)}</span>
             </div>
-            <div className="flex justify-between text-[9px] text-muted-foreground/60 px-1">
-              {[0, 6, 8, 12, 18, 23].map(h => (
-                <button key={h} onClick={() => { setHour(h); setPlaying(false); }} className="hover:text-foreground transition-colors cursor-pointer">
-                  {formatHour(h)}
-                </button>
-              ))}
+            <div className="flex items-center justify-between text-[9px] text-muted-foreground/60 px-1">
+              <div className="flex justify-between flex-1">
+                {[0, 6, 8, 12, 18, 23].map(h => (
+                  <button key={h} onClick={() => { setHour(h); setPlaying(false); }} className="hover:text-foreground transition-colors cursor-pointer">
+                    {formatHour(h)}
+                  </button>
+                ))}
+              </div>
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <button className="ml-3 p-1 rounded hover:bg-secondary text-muted-foreground/40 hover:text-muted-foreground transition-colors">
+                    <Keyboard className="w-3.5 h-3.5" />
+                  </button>
+                </TooltipTrigger>
+                <TooltipContent side="top" className="text-[11px] leading-relaxed">
+                  <p><kbd className="px-1 py-0.5 bg-secondary rounded text-[10px] font-mono">←</kbd> <kbd className="px-1 py-0.5 bg-secondary rounded text-[10px] font-mono">→</kbd> Step hours</p>
+                  <p><kbd className="px-1 py-0.5 bg-secondary rounded text-[10px] font-mono">Space</kbd> Play/pause</p>
+                  <p><kbd className="px-1 py-0.5 bg-secondary rounded text-[10px] font-mono">Esc</kbd> Deselect node</p>
+                </TooltipContent>
+              </Tooltip>
             </div>
           </div>
         </div>
@@ -392,6 +461,33 @@ export default function DigitalTwin() {
                       </li>
                     ))}
                   </ul>
+                </div>
+              )}
+
+              {/* Mini Event Log */}
+              {nodeEvents.length > 0 && (
+                <div>
+                  <p className="text-muted-foreground mb-1.5">Recent Events</p>
+                  <div className="space-y-1.5">
+                    {nodeEvents.map((evt) => {
+                      const icon = evt.type === "critical"
+                        ? <ShieldAlert className="w-3 h-3 text-critical shrink-0" />
+                        : evt.type === "warning"
+                          ? <AlertTriangle className="w-3 h-3 text-warning shrink-0" />
+                          : evt.type === "success"
+                            ? <CheckCircle2 className="w-3 h-3 text-success shrink-0" />
+                            : <Bell className="w-3 h-3 text-info shrink-0" />;
+                      const secs = Math.floor((Date.now() - evt.timestamp.getTime()) / 1000);
+                      const ago = secs < 60 ? `${secs}s` : `${Math.floor(secs / 60)}m`;
+                      return (
+                        <div key={evt.id} className="flex items-start gap-2 text-[10px] text-foreground/70">
+                          {icon}
+                          <span className="flex-1 leading-relaxed">{evt.message}</span>
+                          <span className="text-muted-foreground/60 font-mono shrink-0">{ago}</span>
+                        </div>
+                      );
+                    })}
+                  </div>
                 </div>
               )}
 

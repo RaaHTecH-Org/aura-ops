@@ -1,6 +1,7 @@
 import { Activity, ShieldAlert, AlertTriangle, Bell, CheckCircle2, Radio } from "lucide-react";
+import { useNavigate } from "react-router-dom";
 import { ScrollArea } from "@/components/ui/scroll-area";
-import { useSimulation, SimNotification } from "@/hooks/use-simulation";
+import { useSimulation, SimNotification, keywordServiceMap } from "@/hooks/use-simulation";
 
 const severityIcon: Record<SimNotification["type"], JSX.Element> = {
   critical: <ShieldAlert className="w-3.5 h-3.5 text-critical shrink-0" />,
@@ -17,8 +18,31 @@ function timeAgo(date: Date): string {
   return `${Math.floor(minutes / 60)}h ago`;
 }
 
+/** Resolve a notification to a navigation target */
+function resolveTarget(message: string): { path: string; label: string } | null {
+  // Check for incident IDs (e.g. INC-2001)
+  const incMatch = message.match(/INC-\d+/);
+  if (incMatch) {
+    return { path: `/autopilot?incident=${incMatch[0]}`, label: "Open in Autopilot" };
+  }
+
+  // Check keyword → service mapping for Digital Twin
+  for (const mapping of keywordServiceMap) {
+    if (mapping.keywords.some((kw) => message.includes(kw))) {
+      return { path: `/digital-twin?node=${mapping.serviceId}`, label: "View in Digital Twin" };
+    }
+  }
+  return null;
+}
+
 export default function LiveActivityFeed() {
   const { notifications, isSimulating } = useSimulation();
+  const navigate = useNavigate();
+
+  const handleClick = (n: SimNotification) => {
+    const target = resolveTarget(n.message);
+    if (target) navigate(target.path);
+  };
 
   return (
     <div className="bg-card border border-border rounded-lg">
@@ -45,17 +69,27 @@ export default function LiveActivityFeed() {
       ) : (
         <ScrollArea className="h-[250px]">
           <div className="divide-y divide-border/40">
-            {notifications.map((n) => (
-              <div key={n.id} className="px-4 py-2.5 flex items-start gap-3 hover:bg-muted/20 transition-colors">
-                {severityIcon[n.type]}
-                <div className="flex-1 min-w-0">
-                  <p className="text-xs leading-relaxed">{n.message}</p>
+            {notifications.map((n) => {
+              const target = resolveTarget(n.message);
+              return (
+                <div
+                  key={n.id}
+                  onClick={() => handleClick(n)}
+                  className={`px-4 py-2.5 flex items-start gap-3 transition-colors ${target ? "cursor-pointer hover:bg-primary/5" : "hover:bg-muted/20"}`}
+                >
+                  {severityIcon[n.type]}
+                  <div className="flex-1 min-w-0">
+                    <p className="text-xs leading-relaxed">{n.message}</p>
+                    {target && (
+                      <p className="text-[10px] text-primary/70 mt-0.5">{target.label} →</p>
+                    )}
+                  </div>
+                  <span className="text-[10px] text-muted-foreground font-mono shrink-0 mt-0.5">
+                    {timeAgo(n.timestamp)}
+                  </span>
                 </div>
-                <span className="text-[10px] text-muted-foreground font-mono shrink-0 mt-0.5">
-                  {timeAgo(n.timestamp)}
-                </span>
-              </div>
-            ))}
+              );
+            })}
           </div>
         </ScrollArea>
       )}

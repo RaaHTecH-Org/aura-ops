@@ -65,9 +65,12 @@ export default function Admin() {
 
       {/* Architecture Overview */}
       <div className="ai-panel">
-        <div className="flex items-center gap-2 mb-4">
-          <Zap className="w-4 h-4 text-primary" />
-          <h2 className="text-sm font-semibold">Platform Architecture</h2>
+        <div className="flex items-center justify-between mb-4">
+          <div className="flex items-center gap-2">
+            <Zap className="w-4 h-4 text-primary" />
+            <h2 className="text-sm font-semibold">Platform Architecture</h2>
+          </div>
+          <span className="text-[10px] text-muted-foreground/60 tracking-wide">Developed by Raahtech</span>
         </div>
         <div className="flex items-center justify-center gap-3 flex-wrap">
           <div className="bg-info/10 border border-info/20 rounded-lg px-4 py-2.5 text-center">

@@ -1,30 +1,85 @@
 
 
-## Recommended Next Steps
+## Plan: Build Digital Twin & Autopilot Pages
 
-Based on the current state of the Workflow Command Center, here are prioritized next steps grouped by impact:
+### Summary
+Create two new pages — **Digital Twin** (interactive infrastructure topology with time-travel) and **Autopilot** (AI auto-remediation workflows) — then add them to routing and navigation. The existing `ServiceHealthMap.tsx` component provides the foundational pattern for the topology graph.
 
-### High Impact — Polish & Branding
+---
 
-1. **Add Raahtech developer branding** — Add "by Raahtech" in the sidebar subtitle, update `<meta author>` in `index.html`, and add a subtle footer credit. Protects the concept without renaming the product. (Already approved in a previous conversation.)
+### 1. Create `src/pages/DigitalTwin.tsx`
 
-2. **Mobile responsive pass** — The sidebar, Digital Twin topology SVG, and Autopilot detail panel likely need layout adjustments at 375px–768px viewports. Test and fix stacking, overflow, and touch targets.
+**Infrastructure Topology (based on ServiceHealthMap pattern):**
+- SVG-based graph with 9 nodes: Azure East/West, Entra ID, VPN Gateway, Exchange, SharePoint, Defender, Azure SQL, Internal Apps
+- Connection lines color-coded by health (healthy=primary, degraded=warning dashed, incident=critical dashed)
+- Animated pulse rings on degraded/incident nodes
+- Click node → detail panel slides in (status, incidents, affected systems, actions)
+- "Run Diagnostics" button navigates to `/autopilot?incident=INC-XXXX`
 
-### Medium Impact — Interactivity
+**Node-to-Incident Mapping:**
+- `vpn-gw` → INC-2001, `entra-id` → INC-2002, `exchange` → INC-2003, `db-cluster` → INC-2004, `defender` → INC-2005, `storage-cluster` → INC-2006
 
-3. **Clickable Activity Feed entries** — Make Live Activity Feed items navigate to the relevant Digital Twin node or Autopilot incident based on keyword matching (reuse the existing `keywordServiceMap`).
+**Time-Travel Slider:**
+- 24-hour timeline slider (0-23h) at bottom
+- Predefined snapshots: states change at hours 0, 6, 8, 12, 18 (e.g., VPN degrades at h6, Entra incident at h8)
+- Play/pause auto-advance button
+- Current timestamp display
 
-4. **Digital Twin detail panel: mini event log** — Show the 3–5 most recent simulation events that affected the selected node, so users understand *why* a node changed status without leaving the page.
+**Summary Stats Bar:**
+- Total services, healthy, degraded, incidents counts — derived from current time-travel snapshot
 
-5. **Keyboard shortcuts for time-travel** — Arrow keys to step hours, spacebar to play/pause, `Escape` to deselect a node. Add a small `?` tooltip documenting shortcuts.
+**Health Propagation:**
+- When parent node (e.g., Entra ID) is incident, dependent children show warning-style borders
 
-### Lower Priority — Depth
+---
 
-6. **Dashboard KPI animation** — Animate stat card values (incident count, MTTR, SLA) when simulation mode is active so numbers drift realistically over time.
+### 2. Create `src/pages/Autopilot.tsx`
 
-7. **Autopilot runbook execution feedback** — After completing a runbook, propagate a "success" event back into the simulation engine so the Digital Twin node recovers and the Activity Feed shows the resolution.
+**Autopilot Incidents (6 mock incidents):**
+- INC-2001: Azure VPN Gateway tunnel failure
+- INC-2002: Microsoft Entra ID auth latency
+- INC-2003: Exchange Online delivery delays
+- INC-2004: Azure SQL high DTU
+- INC-2005: Defender sensor offline
+- INC-2006: Azure Cache connectivity
 
-### Recommendation
+Each with severity, affected system, confidence score, suggested actions, runbook steps, estimated resolution time.
 
-Start with **Raahtech branding** (quick win, already planned) then **mobile responsive pass** (highest user-facing risk). After that, clickable feed entries and the mini event log add the most demo value.
+**Incident List:**
+- Table with columns: ID, title, severity, system, confidence (progress bar), status
+- Click to select → opens detail panel
+- `useSearchParams` reads `?incident=INC-XXXX` on mount to auto-select
+
+**AI Decision Pipeline Visualization:**
+- 5-step horizontal workflow: Detect → Analyze → Recommend → Execute → Verify
+- Each step: completed (green check), active (pulsing primary), pending (muted)
+- Connected by arrows between steps
+
+**Detail Panel:**
+- Full incident info, AI analysis, confidence breakdown
+- "Execute Runbook" button → animated step-by-step execution simulation with progress and checkmarks
+
+**Summary Cards:**
+- Active incidents, auto-resolved today, avg resolution time, AI confidence average
+
+---
+
+### 3. Modify `src/App.tsx`
+- Import DigitalTwin and Autopilot
+- Add routes: `/digital-twin` and `/autopilot`
+
+### 4. Modify `src/components/AppLayout.tsx`
+- Add `Network` icon import for Digital Twin, `Cpu` icon for Autopilot
+- Add two nav items under "Intelligence" section:
+  - `/digital-twin` → "Digital Twin"
+  - `/autopilot` → "AI Autopilot"
+
+---
+
+### Technical Notes
+- Reuses existing design patterns from `ServiceHealthMap.tsx` (SVG topology, statusConfig, detail panel)
+- Uses existing CSS classes: `section-header`, `section-title`, `status-badge`, `animate-slide-in`
+- Slider uses Radix `Slider` component already installed
+- Mobile responsive: detail panels stack below on small screens via `useIsMobile()`
+- No new dependencies needed
 
