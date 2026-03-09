@@ -264,11 +264,20 @@ export default function Dashboard() {
         )}
       </div>
 
+      {/* Blast Radius + Ops Rhythm */}
+      {(isVisible("blastRadius", persona) || isVisible("opsRhythm", persona)) && (
+        <div className="grid lg:grid-cols-2 gap-4 sm:gap-6">
+          {isVisible("blastRadius", persona) && <BlastRadius />}
+          {isVisible("opsRhythm", persona) && <OpsRhythm />}
+        </div>
+      )}
+
       {/* Autopilot Actions Preview */}
       {isVisible("autopilotPreview", persona) && <AutopilotPreview />}
 
       {/* Live Activity Feed */}
       {isVisible("activityFeed", persona) && <LiveActivityFeed />}
+
 
       <div className="grid lg:grid-cols-2 gap-4 sm:gap-6">
         {/* Recent Incidents */}
