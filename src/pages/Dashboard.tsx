@@ -41,6 +41,8 @@ import TimeToBurn from "@/components/dashboard/TimeToBurn";
 import RootCauseClusters from "@/components/dashboard/RootCauseClusters";
 import AutopilotPreview from "@/components/dashboard/AutopilotPreview";
 import ThreatMap from "@/components/dashboard/ThreatMap";
+import BlastRadius from "@/components/dashboard/BlastRadius";
+import OpsRhythm from "@/components/dashboard/OpsRhythm";
 
 const statCards = [
   { label: "Open Incidents", value: dashboardStats.openIncidents, icon: AlertTriangle, color: "text-warning", trend: "+3", up: true, personas: ["all", "ops", "security", "engineering"] },
