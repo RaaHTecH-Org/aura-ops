@@ -143,6 +143,10 @@ export interface RootCauseCluster {
   incidentIds: string[];
   insights: string[];
   trend: "escalating" | "stable" | "declining";
+  trendHistory: number[]; // Last 7 days incident count
+  firstDetected: string;
+  affectedUsers: number;
+  affectedServices: string[];
 }
 
 export const rootCauseClusters: RootCauseCluster[] = [
@@ -157,6 +161,10 @@ export const rootCauseClusters: RootCauseCluster[] = [
       "Conditional Access policy blocking VPN users compounds identity-layer outage surface.",
     ],
     trend: "escalating",
+    trendHistory: [1, 1, 2, 2, 3, 4, 5],
+    firstDetected: "2026-03-05T08:15:00Z",
+    affectedUsers: 2847,
+    affectedServices: ["Azure AD", "Azure MFA", "Entra ID"],
   },
   {
     id: "rc-2",
@@ -168,6 +176,10 @@ export const rootCauseClusters: RootCauseCluster[] = [
       "SharePoint CDN latency in APAC region may share root cause with Azure backbone saturation.",
     ],
     trend: "stable",
+    trendHistory: [2, 2, 2, 1, 2, 2, 2],
+    firstDetected: "2026-03-06T07:45:00Z",
+    affectedUsers: 1250,
+    affectedServices: ["Azure VPN Gateway", "SharePoint Online"],
   },
   {
     id: "rc-3",
@@ -179,6 +191,10 @@ export const rootCauseClusters: RootCauseCluster[] = [
       "18 endpoints without EDR coverage create lateral movement risk if breach occurs.",
     ],
     trend: "escalating",
+    trendHistory: [0, 0, 1, 1, 2, 3, 4],
+    firstDetected: "2026-03-07T09:00:00Z",
+    affectedUsers: 21,
+    affectedServices: ["Microsoft Defender", "Entra ID"],
   },
   {
     id: "rc-4",
@@ -190,6 +206,10 @@ export const rootCauseClusters: RootCauseCluster[] = [
       "Outlook build crash affecting shared mailbox users — patch available via Intune.",
     ],
     trend: "declining",
+    trendHistory: [5, 4, 4, 3, 2, 2, 1],
+    firstDetected: "2026-03-04T16:00:00Z",
+    affectedUsers: 124,
+    affectedServices: ["Microsoft Intune", "Microsoft 365"],
   },
 ];
 
@@ -240,11 +260,129 @@ export interface AutopilotPreviewAction {
   approver: string;
   severity: "critical" | "high" | "medium" | "low";
   estimatedResolution: string;
+  impact: {
+    users: number;
+    services: string[];
+    downtime: string;
+  };
+  status: "pending" | "approved" | "executing" | "completed" | "failed";
 }
 
 export const autopilotPreviewActions: AutopilotPreviewAction[] = [
-  { id: "INC-2001", action: "Restart VPN Gateway Instance", system: "Azure VPN Gateway", confidence: 94, requiresApproval: true, approver: "Network Ops Lead", severity: "critical", estimatedResolution: "12 min" },
-  { id: "INC-2002", action: "Revoke Sessions & Reset Passwords", system: "Microsoft Entra ID", confidence: 97, requiresApproval: true, approver: "Security Ops Lead", severity: "critical", estimatedResolution: "5 min" },
-  { id: "INC-2003", action: "Enable SMS MFA Fallback", system: "Azure MFA", confidence: 89, requiresApproval: false, approver: "Auto-approved", severity: "high", estimatedResolution: "3 min" },
-  { id: "INC-2004", action: "Add Index to report_generation SP", system: "Azure SQL", confidence: 82, requiresApproval: true, approver: "DBA Lead", severity: "high", estimatedResolution: "20 min" },
+  { id: "INC-2001", action: "Restart VPN Gateway Instance", system: "Azure VPN Gateway", confidence: 94, requiresApproval: true, approver: "Network Ops Lead", severity: "critical", estimatedResolution: "12 min", impact: { users: 1250, services: ["VPN Gateway", "Remote Access"], downtime: "2-5 min" }, status: "pending" },
+  { id: "INC-2002", action: "Revoke Sessions & Reset Passwords", system: "Microsoft Entra ID", confidence: 97, requiresApproval: true, approver: "Security Ops Lead", severity: "critical", estimatedResolution: "5 min", impact: { users: 3, services: ["Entra ID", "M365 Apps"], downtime: "None" }, status: "pending" },
+  { id: "INC-2003", action: "Enable SMS MFA Fallback", system: "Azure MFA", confidence: 89, requiresApproval: false, approver: "Auto-approved", severity: "high", estimatedResolution: "3 min", impact: { users: 847, services: ["Azure MFA"], downtime: "None" }, status: "approved" },
+  { id: "INC-2004", action: "Add Index to report_generation SP", system: "Azure SQL", confidence: 82, requiresApproval: true, approver: "DBA Lead", severity: "high", estimatedResolution: "20 min", impact: { users: 450, services: ["CRM Database", "Reporting"], downtime: "5-10 min" }, status: "pending" },
+];
+
+export interface AutopilotHistoryItem {
+  id: string;
+  action: string;
+  system: string;
+  executedAt: string;
+  status: "success" | "failed";
+  duration: string;
+}
+
+export const autopilotHistory: AutopilotHistoryItem[] = [
+  { id: "APH-001", action: "Scale Azure SQL DTU", system: "Azure SQL", executedAt: "2026-03-07T06:15:00Z", status: "success", duration: "4m 22s" },
+  { id: "APH-002", action: "Restart Exchange Transport Service", system: "Exchange Online", executedAt: "2026-03-07T03:45:00Z", status: "success", duration: "2m 15s" },
+  { id: "APH-003", action: "Force Intune Policy Sync", system: "Microsoft Intune", executedAt: "2026-03-06T22:30:00Z", status: "failed", duration: "8m 45s" },
+  { id: "APH-004", action: "Rotate Service Principal Credentials", system: "Azure AD", executedAt: "2026-03-06T18:00:00Z", status: "success", duration: "1m 30s" },
+  { id: "APH-005", action: "Clear SharePoint Cache", system: "SharePoint Online", executedAt: "2026-03-06T14:20:00Z", status: "success", duration: "3m 10s" },
+];
+
+// ── Blast Radius Data ──
+export interface BlastRadiusItem {
+  incidentId: string;
+  title: string;
+  severity: "critical" | "high";
+  affectedServices: { name: string; status: "impacted" | "degraded" | "at-risk" }[];
+  affectedUsers: number;
+  affectedRegions: string[];
+  dependencyChain: string[];
+  businessImpact: string;
+}
+
+export const blastRadiusData: BlastRadiusItem[] = [
+  {
+    incidentId: "INC-001",
+    title: "Azure AD Auth Failures",
+    severity: "critical",
+    affectedServices: [
+      { name: "Azure AD", status: "impacted" },
+      { name: "M365 Apps", status: "degraded" },
+      { name: "SharePoint", status: "degraded" },
+      { name: "Teams", status: "at-risk" },
+    ],
+    affectedUsers: 2847,
+    affectedRegions: ["US East", "US West", "EU West"],
+    dependencyChain: ["Azure AD", "Conditional Access", "M365 Identity", "All M365 Apps"],
+    businessImpact: "Core productivity blocked for ~3K users",
+  },
+  {
+    incidentId: "INC-008",
+    title: "Suspicious Sign-in Activity",
+    severity: "critical",
+    affectedServices: [
+      { name: "Entra ID", status: "impacted" },
+      { name: "Defender", status: "degraded" },
+      { name: "Executive Apps", status: "at-risk" },
+    ],
+    affectedUsers: 21,
+    affectedRegions: ["Global"],
+    dependencyChain: ["Threat Actor IPs", "C-Suite Accounts", "Sensitive Data Access"],
+    businessImpact: "Potential data breach — executive accounts targeted",
+  },
+  {
+    incidentId: "INC-002",
+    title: "VPN Gateway Connectivity",
+    severity: "critical",
+    affectedServices: [
+      { name: "VPN Gateway", status: "impacted" },
+      { name: "Remote Access", status: "impacted" },
+      { name: "Internal Apps", status: "degraded" },
+    ],
+    affectedUsers: 1250,
+    affectedRegions: ["NA Region"],
+    dependencyChain: ["Azure VPN", "Site-to-Site Tunnel", "HQ Network", "Internal Resources"],
+    businessImpact: "Remote workforce productivity halted",
+  },
+];
+
+// ── Ops Rhythm Data ──
+export interface OpsRhythmHour {
+  hour: number;
+  incidents: number;
+  isChangeWindow: boolean;
+  isDeployment: boolean;
+}
+
+export interface OpsRhythmDay {
+  day: string;
+  hours: OpsRhythmHour[];
+  total: number;
+}
+
+export const opsRhythmData: OpsRhythmDay[] = [
+  { day: "Mon", hours: Array.from({ length: 24 }, (_, h) => ({ hour: h, incidents: h >= 8 && h <= 10 ? 4 : h >= 14 && h <= 16 ? 2 : Math.random() > 0.7 ? 1 : 0, isChangeWindow: h >= 2 && h <= 4, isDeployment: h === 9 })), total: 12 },
+  { day: "Tue", hours: Array.from({ length: 24 }, (_, h) => ({ hour: h, incidents: h >= 9 && h <= 11 ? 3 : Math.random() > 0.7 ? 1 : 0, isChangeWindow: h >= 2 && h <= 4, isDeployment: false })), total: 9 },
+  { day: "Wed", hours: Array.from({ length: 24 }, (_, h) => ({ hour: h, incidents: h >= 8 && h <= 10 ? 5 : h >= 15 && h <= 17 ? 2 : Math.random() > 0.8 ? 1 : 0, isChangeWindow: h >= 2 && h <= 4, isDeployment: h === 15 })), total: 15 },
+  { day: "Thu", hours: Array.from({ length: 24 }, (_, h) => ({ hour: h, incidents: h >= 9 && h <= 11 ? 2 : Math.random() > 0.7 ? 1 : 0, isChangeWindow: h >= 2 && h <= 4, isDeployment: false })), total: 8 },
+  { day: "Fri", hours: Array.from({ length: 24 }, (_, h) => ({ hour: h, incidents: h >= 8 && h <= 10 ? 4 : h >= 16 && h <= 18 ? 3 : Math.random() > 0.7 ? 1 : 0, isChangeWindow: h >= 2 && h <= 4, isDeployment: h === 16 })), total: 14 },
+  { day: "Sat", hours: Array.from({ length: 24 }, (_, h) => ({ hour: h, incidents: Math.random() > 0.85 ? 1 : 0, isChangeWindow: h >= 2 && h <= 6, isDeployment: false })), total: 3 },
+  { day: "Sun", hours: Array.from({ length: 24 }, (_, h) => ({ hour: h, incidents: Math.random() > 0.9 ? 1 : 0, isChangeWindow: h >= 2 && h <= 6, isDeployment: false })), total: 2 },
+];
+
+export interface OpsRhythmPattern {
+  id: string;
+  pattern: string;
+  confidence: number;
+  recommendation: string;
+}
+
+export const opsRhythmPatterns: OpsRhythmPattern[] = [
+  { id: "p1", pattern: "Monday 9AM spike", confidence: 87, recommendation: "Stagger deployments away from week-start peak" },
+  { id: "p2", pattern: "Post-deployment incidents +40%", confidence: 92, recommendation: "Extend deployment validation window" },
+  { id: "p3", pattern: "Friday EOD surge", confidence: 78, recommendation: "Freeze changes after 4PM Fridays" },
 ];
