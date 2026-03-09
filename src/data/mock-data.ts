@@ -134,3 +134,117 @@ export const alertsNotifications = [
   { id: 5, type: "warning" as const, message: "52 devices non-compliant after Intune policy update", time: "3h ago" },
   { id: 6, type: "info" as const, message: "New security baseline published by Microsoft — review required", time: "5h ago" },
 ];
+
+// ── Root Cause Clusters ──
+export interface RootCauseCluster {
+  id: string;
+  category: string;
+  severity: "critical" | "high" | "medium";
+  incidentIds: string[];
+  insights: string[];
+  trend: "escalating" | "stable" | "declining";
+}
+
+export const rootCauseClusters: RootCauseCluster[] = [
+  {
+    id: "rc-1",
+    category: "Authentication & Identity Failures",
+    severity: "critical",
+    incidentIds: ["INC-001", "INC-005", "INC-012"],
+    insights: [
+      "Azure AD token service degradation driving 87% of auth failures across 3 linked incidents.",
+      "MFA push failures correlate with APNS degradation — SMS fallback recommended.",
+      "Conditional Access policy blocking VPN users compounds identity-layer outage surface.",
+    ],
+    trend: "escalating",
+  },
+  {
+    id: "rc-2",
+    category: "Network & Connectivity",
+    severity: "high",
+    incidentIds: ["INC-002", "INC-003"],
+    insights: [
+      "VPN gateway IKE phase 2 failures match pattern from INC-045 last month.",
+      "SharePoint CDN latency in APAC region may share root cause with Azure backbone saturation.",
+    ],
+    trend: "stable",
+  },
+  {
+    id: "rc-3",
+    category: "Security Threat Activity",
+    severity: "critical",
+    incidentIds: ["INC-008", "INC-014"],
+    insights: [
+      "Password spray attack targeting C-suite accounts from known threat actor IPs.",
+      "18 endpoints without EDR coverage create lateral movement risk if breach occurs.",
+    ],
+    trend: "escalating",
+  },
+  {
+    id: "rc-4",
+    category: "Compliance & Policy Drift",
+    severity: "medium",
+    incidentIds: ["INC-009", "INC-013"],
+    insights: [
+      "March policy update caused 52 device non-compliance — TPM 1.2 hardware gap.",
+      "Outlook build crash affecting shared mailbox users — patch available via Intune.",
+    ],
+    trend: "declining",
+  },
+];
+
+// ── Time to Burn Indicators ──
+export interface TimeToBurnItem {
+  incidentId: string;
+  title: string;
+  severity: "critical" | "high";
+  slaBreach: { minutes: number; total: number };
+  capacityExhaustion: { minutes: number; total: number };
+  securityEscalation: { minutes: number; total: number };
+}
+
+export const timeToBurn: TimeToBurnItem[] = [
+  {
+    incidentId: "INC-001",
+    title: "Azure AD Auth Failures",
+    severity: "critical",
+    slaBreach: { minutes: 47, total: 240 },
+    capacityExhaustion: { minutes: 120, total: 480 },
+    securityEscalation: { minutes: 15, total: 60 },
+  },
+  {
+    incidentId: "INC-008",
+    title: "Suspicious Sign-in Activity",
+    severity: "critical",
+    slaBreach: { minutes: 22, total: 120 },
+    capacityExhaustion: { minutes: 360, total: 480 },
+    securityEscalation: { minutes: 8, total: 30 },
+  },
+  {
+    incidentId: "INC-002",
+    title: "VPN Gateway Connectivity",
+    severity: "critical",
+    slaBreach: { minutes: 95, total: 240 },
+    capacityExhaustion: { minutes: 200, total: 480 },
+    securityEscalation: { minutes: 45, total: 60 },
+  },
+];
+
+// ── Autopilot Preview Actions ──
+export interface AutopilotPreviewAction {
+  id: string;
+  action: string;
+  system: string;
+  confidence: number;
+  requiresApproval: boolean;
+  approver: string;
+  severity: "critical" | "high" | "medium" | "low";
+  estimatedResolution: string;
+}
+
+export const autopilotPreviewActions: AutopilotPreviewAction[] = [
+  { id: "INC-2001", action: "Restart VPN Gateway Instance", system: "Azure VPN Gateway", confidence: 94, requiresApproval: true, approver: "Network Ops Lead", severity: "critical", estimatedResolution: "12 min" },
+  { id: "INC-2002", action: "Revoke Sessions & Reset Passwords", system: "Microsoft Entra ID", confidence: 97, requiresApproval: true, approver: "Security Ops Lead", severity: "critical", estimatedResolution: "5 min" },
+  { id: "INC-2003", action: "Enable SMS MFA Fallback", system: "Azure MFA", confidence: 89, requiresApproval: false, approver: "Auto-approved", severity: "high", estimatedResolution: "3 min" },
+  { id: "INC-2004", action: "Add Index to report_generation SP", system: "Azure SQL", confidence: 82, requiresApproval: true, approver: "DBA Lead", severity: "high", estimatedResolution: "20 min" },
+];
