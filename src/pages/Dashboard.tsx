@@ -44,6 +44,7 @@ import ThreatMap from "@/components/dashboard/ThreatMap";
 import MiniThreatHeatmap from "@/components/dashboard/MiniThreatHeatmap";
 import BlastRadius from "@/components/dashboard/BlastRadius";
 import OpsRhythm from "@/components/dashboard/OpsRhythm";
+import SecurityAuditLog from "@/components/dashboard/SecurityAuditLog";
 
 const statCards = [
   { label: "Open Incidents", value: dashboardStats.openIncidents, icon: AlertTriangle, color: "text-warning", trend: "+3", up: true, personas: ["all", "ops", "security", "engineering"] },
