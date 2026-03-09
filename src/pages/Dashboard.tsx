@@ -67,6 +67,8 @@ const sectionVisibility: Record<string, Persona[]> = {
   threatMap: ["security"],
   incidentTrend: ["all", "ops", "engineering"],
   rootCauseClusters: ["all", "security", "ops"],
+  blastRadius: ["all", "ops", "security"],
+  opsRhythm: ["all", "ops", "engineering"],
   alerts: ["all", "security"],
   requestVolume: ["all", "ops"],
   systemHealth: ["all", "engineering"],
