@@ -1,85 +1,83 @@
 
 
-## Plan: Build Digital Twin & Autopilot Pages
+## Threat Map Enhancements
 
-### Summary
-Create two new pages — **Digital Twin** (interactive infrastructure topology with time-travel) and **Autopilot** (AI auto-remediation workflows) — then add them to routing and navigation. The existing `ServiceHealthMap.tsx` component provides the foundational pattern for the topology graph.
+### 1. Mini Threat Heatmap Widget
+Create `src/components/dashboard/MiniThreatHeatmap.tsx` — a condensed geographic threat view for "All" and "Security" personas.
 
----
+**Design:**
+- Compact card (same height as other widgets)
+- Simplified SVG world map with regional threat intensity
+- Color-coded regions: green (safe), yellow (moderate), red (active threats)
+- Top 3 threat origins with attempt counts
+- "View Full Map" link to Security persona or ThreatMap section
 
-### 1. Create `src/pages/DigitalTwin.tsx`
-
-**Infrastructure Topology (based on ServiceHealthMap pattern):**
-- SVG-based graph with 9 nodes: Azure East/West, Entra ID, VPN Gateway, Exchange, SharePoint, Defender, Azure SQL, Internal Apps
-- Connection lines color-coded by health (healthy=primary, degraded=warning dashed, incident=critical dashed)
-- Animated pulse rings on degraded/incident nodes
-- Click node → detail panel slides in (status, incidents, affected systems, actions)
-- "Run Diagnostics" button navigates to `/autopilot?incident=INC-XXXX`
-
-**Node-to-Incident Mapping:**
-- `vpn-gw` → INC-2001, `entra-id` → INC-2002, `exchange` → INC-2003, `db-cluster` → INC-2004, `defender` → INC-2005, `storage-cluster` → INC-2006
-
-**Time-Travel Slider:**
-- 24-hour timeline slider (0-23h) at bottom
-- Predefined snapshots: states change at hours 0, 6, 8, 12, 18 (e.g., VPN degrades at h6, Entra incident at h8)
-- Play/pause auto-advance button
-- Current timestamp display
-
-**Summary Stats Bar:**
-- Total services, healthy, degraded, incidents counts — derived from current time-travel snapshot
-
-**Health Propagation:**
-- When parent node (e.g., Entra ID) is incident, dependent children show warning-style borders
+**Dashboard integration:**
+- Add `miniThreatHeatmap: ["all", "security"]` to `sectionVisibility`
+- Place after Service Health Map row
 
 ---
 
-### 2. Create `src/pages/Autopilot.tsx`
+### 2. Animated Attack Lines
+Enhance `ThreatMap.tsx` with pulsing attack vectors:
 
-**Autopilot Incidents (6 mock incidents):**
-- INC-2001: Azure VPN Gateway tunnel failure
-- INC-2002: Microsoft Entra ID auth latency
-- INC-2003: Exchange Online delivery delays
-- INC-2004: Azure SQL high DTU
-- INC-2005: Defender sensor offline
-- INC-2006: Azure Cache connectivity
+**SVG Animation:**
+```svg
+<circle r="3" fill="hsl(var(--critical))">
+  <animateMotion dur="2s" repeatCount="indefinite" path="M{actorX},{actorY} L{hqX},{hqY}" />
+</circle>
+```
 
-Each with severity, affected system, confidence score, suggested actions, runbook steps, estimated resolution time.
-
-**Incident List:**
-- Table with columns: ID, title, severity, system, confidence (progress bar), status
-- Click to select → opens detail panel
-- `useSearchParams` reads `?incident=INC-XXXX` on mount to auto-select
-
-**AI Decision Pipeline Visualization:**
-- 5-step horizontal workflow: Detect → Analyze → Recommend → Execute → Verify
-- Each step: completed (green check), active (pulsing primary), pending (muted)
-- Connected by arrows between steps
-
-**Detail Panel:**
-- Full incident info, AI analysis, confidence breakdown
-- "Execute Runbook" button → animated step-by-step execution simulation with progress and checkmarks
-
-**Summary Cards:**
-- Active incidents, auto-resolved today, avg resolution time, AI confidence average
+- Add animated "bullet" circles that travel along attack paths
+- Critical threats: faster pulse (1.5s), red bullets
+- High threats: medium pulse (2s), yellow bullets
+- Staggered start times to avoid synchronized motion
 
 ---
 
-### 3. Modify `src/App.tsx`
-- Import DigitalTwin and Autopilot
-- Add routes: `/digital-twin` and `/autopilot`
+### 3. Interactive Threat Actor Detail Panel
+Add click-to-expand functionality using `Dialog`:
 
-### 4. Modify `src/components/AppLayout.tsx`
-- Add `Network` icon import for Digital Twin, `Cpu` icon for Autopilot
-- Add two nav items under "Intelligence" section:
-  - `/digital-twin` → "Digital Twin"
-  - `/autopilot` → "AI Autopilot"
+**Click handler on threat points:**
+- Clicking an actor point or table row opens detail panel
+- Uses existing `Dialog` component
+
+**Detail panel content:**
+- Geolocation: City, region, ISP, AS number
+- Attack timeline: First seen, last attempt, attempt frequency
+- Related Defender alerts (mock 2-3 alerts)
+- Recommended actions: "Block IP range", "Enable Geo-fencing", "Escalate to SOC"
+- Quick action buttons with toast confirmation
+
+**Data extension:**
+```ts
+interface ThreatActor {
+  // existing fields...
+  isp: string;
+  asn: string;
+  firstSeen: string;
+  lastAttempt: string;
+  relatedAlerts: { id: string; title: string; severity: string }[];
+}
+```
 
 ---
 
-### Technical Notes
-- Reuses existing design patterns from `ServiceHealthMap.tsx` (SVG topology, statusConfig, detail panel)
-- Uses existing CSS classes: `section-header`, `section-title`, `status-badge`, `animate-slide-in`
-- Slider uses Radix `Slider` component already installed
-- Mobile responsive: detail panels stack below on small screens via `useIsMobile()`
-- No new dependencies needed
+### 4. Mobile Responsiveness
+Update `ThreatMap.tsx` and dashboard layout:
+
+- Threat map SVG: `viewBox` scaling, hide labels on `sm:`
+- Actor table: Stack IP/location vertically on mobile
+- Mini heatmap: Single-column layout on mobile
+- Detail dialog: Full-screen sheet on mobile using responsive breakpoint
+
+---
+
+### Files Modified
+
+| File | Change |
+|------|--------|
+| `src/components/dashboard/ThreatMap.tsx` | Add animated attack lines, click handlers, detail dialog |
+| `src/components/dashboard/MiniThreatHeatmap.tsx` | New condensed heatmap widget |
+| `src/pages/Dashboard.tsx` | Add mini heatmap to visible sections |
 
