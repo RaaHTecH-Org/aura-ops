@@ -1,7 +1,9 @@
-import { useState } from "react";
+import { useState, useMemo } from "react";
 import { Globe, ArrowRight, ShieldAlert } from "lucide-react";
 import { Link } from "react-router-dom";
 import { continentPaths, hqTarget } from "./worldMapPaths";
+import { useSimulation } from "@/hooks/use-simulation";
+import { useThreatCounters } from "@/hooks/use-threat-counters";
 
 interface RegionThreat {
   region: string;
@@ -12,7 +14,7 @@ interface RegionThreat {
   continentId: string;
 }
 
-const regionThreats: RegionThreat[] = [
+const baseRegionThreats: RegionThreat[] = [
   { region: "Eastern Europe", intensity: "high", attempts: 85, barPct: 100, hotspot: { x: 530, y: 110 }, continentId: "europe" },
   { region: "South America", intensity: "high", attempts: 40, barPct: 47, hotspot: { x: 210, y: 310 }, continentId: "south-america" },
   { region: "West Africa", intensity: "high", attempts: 28, barPct: 33, hotspot: { x: 468, y: 210 }, continentId: "africa" },
@@ -30,6 +32,19 @@ const intensityStyle = {
 
 export default function MiniThreatHeatmap() {
   const [hoveredRegion, setHoveredRegion] = useState<string | null>(null);
+  const { isSimulating } = useSimulation();
+  const regionKeys = useMemo(() => baseRegionThreats.map((r) => r.region), []);
+  const deltas = useThreatCounters(regionKeys, isSimulating);
+
+  const regionThreats = useMemo(() => {
+    if (!isSimulating) return baseRegionThreats;
+    const maxAttempts = Math.max(...baseRegionThreats.map((r) => r.attempts + (deltas.get(r.region) ?? 0)));
+    return baseRegionThreats.map((r) => {
+      const attempts = r.attempts + (deltas.get(r.region) ?? 0);
+      return { ...r, attempts, barPct: Math.round((attempts / maxAttempts) * 100) };
+    });
+  }, [isSimulating, deltas]);
+
   const totalAttempts = regionThreats.reduce((sum, r) => sum + r.attempts, 0);
 
   return (
@@ -39,7 +54,7 @@ export default function MiniThreatHeatmap() {
           <Globe className="w-4 h-4 text-critical" />
           <h2 className="section-title">Threat Activity</h2>
         </div>
-        <span className="text-[10px] bg-critical/10 text-critical px-2 py-0.5 rounded-full font-mono font-medium">
+        <span className={`text-[10px] px-2 py-0.5 rounded-full font-mono font-medium transition-all duration-300 ${isSimulating ? "bg-critical/20 text-critical animate-pulse" : "bg-critical/10 text-critical"}`}>
           {totalAttempts} attempts
         </span>
       </div>
@@ -146,7 +161,7 @@ export default function MiniThreatHeatmap() {
                   </div>
                   <div className="flex items-center gap-2">
                     <span className={`text-[9px] px-1.5 py-0.5 rounded border font-medium capitalize ${s.badge}`}>{region.intensity}</span>
-                    <span className="text-[10px] font-mono text-muted-foreground w-6 text-right">{region.attempts}</span>
+                    <span className={`text-[10px] font-mono w-6 text-right transition-colors duration-300 ${isSimulating && (deltas.get(region.region) ?? 0) > 0 ? "text-critical" : "text-muted-foreground"}`}>{region.attempts}</span>
                   </div>
                 </div>
                 <div className="h-1 bg-secondary/40 rounded-full overflow-hidden">

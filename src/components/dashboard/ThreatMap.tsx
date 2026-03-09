@@ -1,10 +1,12 @@
-import { useState } from "react";
+import { useState, useMemo } from "react";
 import { Globe, ShieldAlert, MapPin, Shield, Clock, Server, Ban, AlertTriangle, ExternalLink, Filter } from "lucide-react";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
 import { continentPaths, hqTarget } from "./worldMapPaths";
 import { addAuditEntry } from "@/hooks/use-security-audit";
+import { useSimulation } from "@/hooks/use-simulation";
+import { useThreatCounters } from "@/hooks/use-threat-counters";
 
 interface RelatedAlert {
   id: string;
@@ -115,6 +117,18 @@ const riskConfig = {
 type RiskLevel = "critical" | "high" | "medium";
 
 export default function ThreatMap() {
+  const { isSimulating } = useSimulation();
+  const actorKeys = useMemo(() => threatActors.map((a) => a.ip), []);
+  const deltas = useThreatCounters(actorKeys, isSimulating);
+
+  const liveActors = useMemo(() => {
+    if (!isSimulating) return threatActors;
+    return threatActors.map((a) => ({
+      ...a,
+      attempts: a.attempts + (deltas.get(a.ip) ?? 0),
+    }));
+  }, [isSimulating, deltas]);
+
   const [selectedActor, setSelectedActor] = useState<ThreatActor | null>(null);
   const [hoveredActor, setHoveredActor] = useState<ThreatActor | null>(null);
   const [visibleSeverities, setVisibleSeverities] = useState<Set<RiskLevel>>(new Set(["critical", "high", "medium"]));
@@ -131,7 +145,7 @@ export default function ThreatMap() {
     });
   };
 
-  const filteredActors = threatActors.filter((a) => visibleSeverities.has(a.risk));
+  const filteredActors = liveActors.filter((a) => visibleSeverities.has(a.risk));
 
   const handleBlockIP = (ip: string) => {
     toast.success(`Blocked IP range ${ip.replace('xx', '0/24')}`, { description: "Firewall rule created successfully" });
