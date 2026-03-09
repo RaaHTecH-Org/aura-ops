@@ -41,6 +41,7 @@ import TimeToBurn from "@/components/dashboard/TimeToBurn";
 import RootCauseClusters from "@/components/dashboard/RootCauseClusters";
 import AutopilotPreview from "@/components/dashboard/AutopilotPreview";
 import ThreatMap from "@/components/dashboard/ThreatMap";
+import MiniThreatHeatmap from "@/components/dashboard/MiniThreatHeatmap";
 import BlastRadius from "@/components/dashboard/BlastRadius";
 import OpsRhythm from "@/components/dashboard/OpsRhythm";
 
