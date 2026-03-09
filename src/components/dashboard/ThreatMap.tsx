@@ -65,6 +65,44 @@ const threatActors: ThreatActor[] = [
     firstSeen: "2024-01-16 22:45 UTC", lastAttempt: "5 min ago",
     relatedAlerts: [{ id: "DEF-1005", title: "Credential stuffing detected", severity: "high" }],
   },
+  {
+    ip: "200.68.112.xx", location: "São Paulo, Brazil", country: "BR",
+    x: 215, y: 305, attempts: 31, risk: "critical",
+    isp: "Locaweb Serviços", asn: "AS27715",
+    firstSeen: "2024-01-14 18:10 UTC", lastAttempt: "1 min ago",
+    relatedAlerts: [
+      { id: "DEF-1006", title: "Botnet C2 callback detected", severity: "critical" },
+      { id: "DEF-1007", title: "Automated exploit scanner", severity: "high" },
+    ],
+  },
+  {
+    ip: "190.14.233.xx", location: "Buenos Aires, Argentina", country: "AR",
+    x: 198, y: 345, attempts: 9, risk: "medium",
+    isp: "Telecom Argentina", asn: "AS7303",
+    firstSeen: "2024-01-19 09:55 UTC", lastAttempt: "45 min ago",
+    relatedAlerts: [],
+  },
+  {
+    ip: "41.222.196.xx", location: "Lagos, Nigeria", country: "NG",
+    x: 468, y: 210, attempts: 28, risk: "high",
+    isp: "MainOne Cable", asn: "AS37282",
+    firstSeen: "2024-01-15 14:30 UTC", lastAttempt: "4 min ago",
+    relatedAlerts: [{ id: "DEF-1008", title: "Phishing relay detected", severity: "high" }],
+  },
+  {
+    ip: "102.89.47.xx", location: "Johannesburg, South Africa", country: "ZA",
+    x: 510, y: 305, attempts: 18, risk: "high",
+    isp: "Afrihost", asn: "AS37611",
+    firstSeen: "2024-01-17 21:15 UTC", lastAttempt: "12 min ago",
+    relatedAlerts: [{ id: "DEF-1009", title: "SSH brute force attempt", severity: "high" }],
+  },
+  {
+    ip: "196.216.65.xx", location: "Nairobi, Kenya", country: "KE",
+    x: 540, y: 238, attempts: 6, risk: "medium",
+    isp: "Safaricom PLC", asn: "AS33771",
+    firstSeen: "2024-01-20 06:40 UTC", lastAttempt: "1 hr ago",
+    relatedAlerts: [],
+  },
 ];
 
 const riskConfig = {
