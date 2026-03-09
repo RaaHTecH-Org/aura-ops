@@ -64,6 +64,7 @@ const alertIcon = {
 // Persona visibility config
 const sectionVisibility: Record<string, Persona[]> = {
   timeToBurn: ["all", "ops", "security"],
+  miniThreatHeatmap: ["all", "security"],
   serviceHealthMap: ["all", "ops", "engineering"],
   threatMap: ["security"],
   incidentTrend: ["all", "ops", "engineering"],
