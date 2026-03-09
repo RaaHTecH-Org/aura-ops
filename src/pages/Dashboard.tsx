@@ -81,6 +81,7 @@ const sectionVisibility: Record<string, Persona[]> = {
   recentIncidents: ["all", "ops", "security"],
   activeRequests: ["all", "ops"],
   securityAudit: ["security"],
+  threatTimeline: ["security"],
 };
 
 function isVisible(section: string, persona: Persona): boolean {
