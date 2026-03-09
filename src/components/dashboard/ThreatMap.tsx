@@ -260,7 +260,7 @@ export default function ThreatMap() {
             <text x={hqTarget.x} y={hqTarget.y - 18} textAnchor="middle" fill="hsl(var(--primary))" fontSize={11} fontWeight={600}>HQ</text>
 
             {/* Threat actor points — interactive */}
-            {threatActors.map((actor) => {
+            {filteredActors.map((actor) => {
               const cfg = riskConfig[actor.risk];
               const isHovered = hoveredActor?.ip === actor.ip;
               return (
