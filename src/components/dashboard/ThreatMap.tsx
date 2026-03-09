@@ -5,6 +5,8 @@ import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
 import { continentPaths, hqTarget } from "./worldMapPaths";
 import { addAuditEntry } from "@/hooks/use-security-audit";
+import { useSimulation } from "@/hooks/use-simulation";
+import { useThreatCounters } from "@/hooks/use-threat-counters";
 
 interface RelatedAlert {
   id: string;
