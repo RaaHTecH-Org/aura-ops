@@ -141,6 +141,9 @@ export default function Dashboard() {
       {/* Threat Map — Security Lead only */}
       {isVisible("threatMap", persona) && <ThreatMap />}
 
+      {/* Threat Timeline — Security Lead only */}
+      {isVisible("threatTimeline", persona) && <ThreatTimeline />}
+
       {/* Security Audit Log — Security Lead only */}
       {isVisible("securityAudit", persona) && <SecurityAuditLog />}
 
