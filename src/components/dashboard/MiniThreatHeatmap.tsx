@@ -54,7 +54,7 @@ export default function MiniThreatHeatmap() {
           <Globe className="w-4 h-4 text-critical" />
           <h2 className="section-title">Threat Activity</h2>
         </div>
-        <span className="text-[10px] bg-critical/10 text-critical px-2 py-0.5 rounded-full font-mono font-medium">
+        <span className={`text-[10px] px-2 py-0.5 rounded-full font-mono font-medium transition-all duration-300 ${isSimulating ? "bg-critical/20 text-critical animate-pulse" : "bg-critical/10 text-critical"}`}>
           {totalAttempts} attempts
         </span>
       </div>
