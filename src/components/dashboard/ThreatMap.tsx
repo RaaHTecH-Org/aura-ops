@@ -112,19 +112,39 @@ const riskConfig = {
   medium: { color: "text-info", bg: "bg-info", pulse: "", stroke: "hsl(var(--info))" },
 };
 
+type RiskLevel = "critical" | "high" | "medium";
+
 export default function ThreatMap() {
   const [selectedActor, setSelectedActor] = useState<ThreatActor | null>(null);
   const [hoveredActor, setHoveredActor] = useState<ThreatActor | null>(null);
+  const [visibleSeverities, setVisibleSeverities] = useState<Set<RiskLevel>>(new Set(["critical", "high", "medium"]));
+
+  const toggleSeverity = (level: RiskLevel) => {
+    setVisibleSeverities((prev) => {
+      const next = new Set(prev);
+      if (next.has(level)) {
+        if (next.size > 1) next.delete(level);
+      } else {
+        next.add(level);
+      }
+      return next;
+    });
+  };
+
+  const filteredActors = threatActors.filter((a) => visibleSeverities.has(a.risk));
 
   const handleBlockIP = (ip: string) => {
     toast.success(`Blocked IP range ${ip.replace('xx', '0/24')}`, { description: "Firewall rule created successfully" });
+    addAuditEntry("block_ip", ip.replace('xx', '0/24'), "Firewall rule created — blocked entire /24 range");
     setSelectedActor(null);
   };
   const handleEnableGeoFencing = (country: string) => {
     toast.success(`Geo-fencing enabled for ${country}`, { description: "All traffic from this region will be blocked" });
+    addAuditEntry("geo_fence", country, `Geo-fencing enabled — all traffic from ${country} blocked`);
   };
   const handleEscalateToSOC = (ip: string) => {
     toast.info(`Escalated to SOC team`, { description: `Ticket created for IP ${ip}` });
+    addAuditEntry("escalate_soc", ip, `SOC ticket created for threat investigation`);
   };
 
   return (
