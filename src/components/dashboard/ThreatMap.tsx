@@ -229,7 +229,7 @@ export default function ThreatMap() {
             })}
 
             {/* Animated bullets */}
-            {threatActors.map((actor, idx) => {
+            {filteredActors.map((actor, idx) => {
               const cfg = riskConfig[actor.risk];
               const dur = actor.risk === "critical" ? "1.5s" : actor.risk === "high" ? "2s" : "2.5s";
               const delay = `${idx * 0.4}s`;
