@@ -227,10 +227,10 @@ export default function AppLayout({ children }: { children: ReactNode }) {
                 <div className="flex items-center justify-between px-4 py-3 border-b border-border">
                   <h4 className="text-sm font-semibold">Notifications</h4>
                   <div className="flex gap-1">
-                    <button onClick={markAllRead} className="p-1 rounded hover:bg-secondary text-muted-foreground hover:text-foreground transition-colors" title="Mark all read">
+                    <button onClick={markAllRead} className="p-1 rounded hover:bg-secondary text-muted-foreground hover:text-foreground transition-colors" title="Mark all read" aria-label="Mark all read">
                       <CheckCheck className="w-3.5 h-3.5" />
                     </button>
-                    <button onClick={clearNotifications} className="p-1 rounded hover:bg-secondary text-muted-foreground hover:text-foreground transition-colors" title="Clear all">
+                    <button onClick={clearNotifications} className="p-1 rounded hover:bg-secondary text-muted-foreground hover:text-foreground transition-colors" title="Clear all" aria-label="Clear all">
                       <Trash2 className="w-3.5 h-3.5" />
                     </button>
                   </div>
