@@ -209,7 +209,7 @@ export default function AppLayout({ children }: { children: ReactNode }) {
                 <p className="text-xs">{isSimulating ? "Simulation active" : "Start live demo"}</p>
               </TooltipContent>
             </Tooltip>
-            <button className="p-2 rounded-md hover:bg-secondary transition-colors text-muted-foreground hover:text-foreground">
+            <button className="p-2 rounded-md hover:bg-secondary transition-colors text-muted-foreground hover:text-foreground" aria-label="Search">
               <Search className="w-4 h-4" />
             </button>
             <Popover>
