@@ -1,10 +1,18 @@
-import { Shield, Ban, Globe, AlertTriangle, Clock } from "lucide-react";
-import { useSecurityAudit, type AuditEntry } from "@/hooks/use-security-audit";
+import { Shield, Ban, Globe, AlertTriangle, Clock, Download, Trash2 } from "lucide-react";
+import { useSecurityAudit, clearAuditEntries, type AuditEntry } from "@/hooks/use-security-audit";
+import { Button } from "@/components/ui/button";
+import { toast } from "sonner";
 
 const actionConfig: Record<AuditEntry["action"], { icon: typeof Ban; label: string; color: string }> = {
   block_ip: { icon: Ban, label: "IP Blocked", color: "text-critical" },
   geo_fence: { icon: Globe, label: "Geo-fence Enabled", color: "text-warning" },
   escalate_soc: { icon: AlertTriangle, label: "Escalated to SOC", color: "text-info" },
+};
+
+const actionLabels: Record<AuditEntry["action"], string> = {
+  block_ip: "IP Blocked",
+  geo_fence: "Geo-fence Enabled",
+  escalate_soc: "Escalated to SOC",
 };
 
 function timeAgo(date: Date): string {
@@ -15,8 +23,30 @@ function timeAgo(date: Date): string {
   return `${Math.floor(minutes / 60)}h ago`;
 }
 
+function exportAuditLog(entries: AuditEntry[]) {
+  const header = "Timestamp,Action,Target,Detail,Actor";
+  const rows = entries.map((e) =>
+    `"${e.timestamp.toISOString()}","${actionLabels[e.action]}","${e.target}","${e.detail}","${e.actor}"`
+  );
+  const csv = [header, ...rows].join("\n");
+  const blob = new Blob([csv], { type: "text/csv" });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement("a");
+  a.href = url;
+  a.download = `security-audit-${new Date().toISOString().slice(0, 10)}.csv`;
+  a.click();
+  URL.revokeObjectURL(url);
+  toast.success("Audit log exported", { description: `${entries.length} entries saved as CSV` });
+}
+
 export default function SecurityAuditLog() {
   const entries = useSecurityAudit();
+
+  const handleClear = () => {
+    const count = entries.length;
+    clearAuditEntries();
+    toast.success("Audit log cleared", { description: `${count} entries removed` });
+  };
 
   return (
     <div className="bg-card border border-border rounded-lg">
@@ -25,9 +55,21 @@ export default function SecurityAuditLog() {
           <Shield className="w-4 h-4 text-primary" />
           <h2 className="section-title">Security Actions</h2>
         </div>
-        <span className="text-[10px] text-muted-foreground font-mono">
-          {entries.length} action{entries.length !== 1 ? "s" : ""} logged
-        </span>
+        <div className="flex items-center gap-2">
+          {entries.length > 0 && (
+            <>
+              <Button variant="ghost" size="sm" className="h-6 px-2 text-[10px] gap-1" onClick={() => exportAuditLog(entries)}>
+                <Download className="w-3 h-3" /> Export
+              </Button>
+              <Button variant="ghost" size="sm" className="h-6 px-2 text-[10px] gap-1 text-muted-foreground hover:text-critical" onClick={handleClear}>
+                <Trash2 className="w-3 h-3" /> Clear
+              </Button>
+            </>
+          )}
+          <span className="text-[10px] text-muted-foreground font-mono">
+            {entries.length} action{entries.length !== 1 ? "s" : ""} logged
+          </span>
+        </div>
       </div>
 
       {entries.length === 0 ? (

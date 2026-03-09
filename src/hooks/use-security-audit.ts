@@ -33,6 +33,11 @@ export function addAuditEntry(action: AuditEntry["action"], target: string, deta
   emit();
 }
 
+export function clearAuditEntries() {
+  entries = [];
+  emit();
+}
+
 export function useSecurityAudit() {
   const snapshot = useSyncExternalStore(
     (cb) => {
