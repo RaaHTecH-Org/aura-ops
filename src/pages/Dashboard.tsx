@@ -41,6 +41,8 @@ import TimeToBurn from "@/components/dashboard/TimeToBurn";
 import RootCauseClusters from "@/components/dashboard/RootCauseClusters";
 import AutopilotPreview from "@/components/dashboard/AutopilotPreview";
 import ThreatMap from "@/components/dashboard/ThreatMap";
+import BlastRadius from "@/components/dashboard/BlastRadius";
+import OpsRhythm from "@/components/dashboard/OpsRhythm";
 
 const statCards = [
   { label: "Open Incidents", value: dashboardStats.openIncidents, icon: AlertTriangle, color: "text-warning", trend: "+3", up: true, personas: ["all", "ops", "security", "engineering"] },
@@ -65,6 +67,8 @@ const sectionVisibility: Record<string, Persona[]> = {
   threatMap: ["security"],
   incidentTrend: ["all", "ops", "engineering"],
   rootCauseClusters: ["all", "security", "ops"],
+  blastRadius: ["all", "ops", "security"],
+  opsRhythm: ["all", "ops", "engineering"],
   alerts: ["all", "security"],
   requestVolume: ["all", "ops"],
   systemHealth: ["all", "engineering"],
@@ -260,11 +264,20 @@ export default function Dashboard() {
         )}
       </div>
 
+      {/* Blast Radius + Ops Rhythm */}
+      {(isVisible("blastRadius", persona) || isVisible("opsRhythm", persona)) && (
+        <div className="grid lg:grid-cols-2 gap-4 sm:gap-6">
+          {isVisible("blastRadius", persona) && <BlastRadius />}
+          {isVisible("opsRhythm", persona) && <OpsRhythm />}
+        </div>
+      )}
+
       {/* Autopilot Actions Preview */}
       {isVisible("autopilotPreview", persona) && <AutopilotPreview />}
 
       {/* Live Activity Feed */}
       {isVisible("activityFeed", persona) && <LiveActivityFeed />}
+
 
       <div className="grid lg:grid-cols-2 gap-4 sm:gap-6">
         {/* Recent Incidents */}
