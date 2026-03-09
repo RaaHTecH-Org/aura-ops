@@ -212,7 +212,7 @@ export default function ThreatMap() {
             ))}
 
             {/* Attack lines */}
-            {threatActors.map((actor) => {
+            {filteredActors.map((actor) => {
               const cfg = riskConfig[actor.risk];
               const isHovered = hoveredActor?.ip === actor.ip;
               return (
