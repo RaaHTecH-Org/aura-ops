@@ -154,9 +154,30 @@ export default function ThreatMap() {
           <Globe className="w-4 h-4 text-critical" />
           <h2 className="section-title">Threat Origin Map</h2>
         </div>
-        <div className="flex items-center gap-2">
+        <div className="flex items-center gap-2 flex-wrap">
+          {/* Severity Filters */}
+          <div className="flex items-center gap-1">
+            <Filter className="w-3 h-3 text-muted-foreground" />
+            {(["critical", "high", "medium"] as RiskLevel[]).map((level) => {
+              const active = visibleSeverities.has(level);
+              const colors = {
+                critical: active ? "bg-critical/20 text-critical border-critical/40" : "bg-muted/20 text-muted-foreground border-border",
+                high: active ? "bg-warning/20 text-warning border-warning/40" : "bg-muted/20 text-muted-foreground border-border",
+                medium: active ? "bg-info/20 text-info border-info/40" : "bg-muted/20 text-muted-foreground border-border",
+              };
+              return (
+                <button
+                  key={level}
+                  onClick={() => toggleSeverity(level)}
+                  className={`text-[9px] px-1.5 py-0.5 rounded-full font-medium capitalize border transition-colors cursor-pointer ${colors[level]}`}
+                >
+                  {level}
+                </button>
+              );
+            })}
+          </div>
           <span className="text-[10px] text-muted-foreground font-mono">
-            {threatActors.reduce((s, a) => s + a.attempts, 0)} total attempts
+            {filteredActors.reduce((s, a) => s + a.attempts, 0)} total attempts
           </span>
           <span className="text-[10px] bg-critical/15 text-critical px-2 py-0.5 rounded-full font-medium">
             INC-008 — Active Threat
