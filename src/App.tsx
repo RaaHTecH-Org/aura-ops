@@ -13,6 +13,7 @@ import AICopilot from "@/pages/AICopilot";
 import DigitalTwin from "@/pages/DigitalTwin";
 import Autopilot from "@/pages/Autopilot";
 import Admin from "@/pages/Admin";
+import RootCauses from "@/pages/RootCauses";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -34,6 +35,7 @@ const App = () => (
             <Route path="/digital-twin" element={<DigitalTwin />} />
             <Route path="/autopilot" element={<Autopilot />} />
             <Route path="/admin" element={<Admin />} />
+            <Route path="/root-causes" element={<RootCauses />} />
             <Route path="*" element={<NotFound />} />
           </Routes>
         </AppLayout>

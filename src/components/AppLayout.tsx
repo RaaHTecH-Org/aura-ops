@@ -36,6 +36,7 @@ const navItems = [
   { path: "/copilot", label: "AI Copilot", icon: Bot },
   { path: "/digital-twin", label: "Digital Twin", icon: Network },
   { path: "/autopilot", label: "AI Autopilot", icon: Cpu },
+  { path: "/root-causes", label: "Root Causes", icon: Activity },
   { path: "/admin", label: "Admin", icon: Settings },
 ];
 
