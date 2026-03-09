@@ -10,15 +10,19 @@ AI-assisted enterprise IT operations platform purpose-built for Microsoft enviro
 
 | Module | Description |
 |---|---|
-| **Dashboard** | Operational overview with KPIs, incident trends, system health, and AI insights |
+| **Dashboard** | Operational overview with KPIs, incident trends, system health, and AI insights. Persona toggle switches between Operations and Security views. |
 | **Incidents** | Incident triage with priority, status, AI summaries, and team assignment |
 | **Service Requests** | Workflow-stage tracking, approval status, and department routing |
 | **Assets** | IT asset inventory with compliance state, lifecycle stage, and location |
 | **AI Copilot** | Conversational AI assistant for operational queries and recommendations |
 | **Digital Twin** | Interactive infrastructure topology with 24-hour time-travel slider and health propagation |
 | **AI Autopilot** | Automated incident remediation with 5-step decision pipeline and runbook execution |
-| **Real-Time Simulation** | Live demo mode that generates random service health changes and notifications |
+| **Real-Time Simulation** | Live Demo Mode generates random service health changes, notifications, and live threat counter increments |
 | **Notification System** | Bell icon dropdown with severity-coded alerts, timestamps, and read status |
+| **Security Persona** | Threat Origin Map with interactive actor detail dialogs, IP blocking, geo-fencing, and SOC escalation |
+| **Security Audit Log** | Filterable audit trail of security actions with framer-motion animations, CSV export, and filter pills |
+| **Live Threat Counters** | Real-time animated attempt count increments on threat actors during Live Demo Mode |
+| **Threat Heatmap** | Mini heatmap widget with region-level attempt counts and pulsing total badge |
 
 ## Architecture
 
@@ -43,6 +47,7 @@ AI Insights & Automation (Copilot, Autopilot, Digital Twin)
 - **Styling**: Tailwind CSS + custom design system (dark theme, HSL tokens)
 - **Components**: shadcn/ui (Radix UI primitives)
 - **Charts**: Recharts
+- **Animation**: Framer Motion
 - **Routing**: React Router v6
 - **State**: React Query, React Context
 
