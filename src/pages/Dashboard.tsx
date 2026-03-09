@@ -36,10 +36,11 @@ import {
 } from "recharts";
 import ServiceHealthMap from "@/components/ServiceHealthMap";
 import LiveActivityFeed from "@/components/LiveActivityFeed";
-import PersonaToggle, { type Persona } from "@/components/dashboard/PersonaToggle";
+import PersonaToggle, { type Persona, getPersistedPersona } from "@/components/dashboard/PersonaToggle";
 import TimeToBurn from "@/components/dashboard/TimeToBurn";
 import RootCauseClusters from "@/components/dashboard/RootCauseClusters";
 import AutopilotPreview from "@/components/dashboard/AutopilotPreview";
+import ThreatMap from "@/components/dashboard/ThreatMap";
 
 const statCards = [
   { label: "Open Incidents", value: dashboardStats.openIncidents, icon: AlertTriangle, color: "text-warning", trend: "+3", up: true, personas: ["all", "ops", "security", "engineering"] },
@@ -61,6 +62,7 @@ const alertIcon = {
 const sectionVisibility: Record<string, Persona[]> = {
   timeToBurn: ["all", "ops", "security"],
   serviceHealthMap: ["all", "ops", "engineering"],
+  threatMap: ["security"],
   incidentTrend: ["all", "ops", "engineering"],
   rootCauseClusters: ["all", "security", "ops"],
   alerts: ["all", "security"],
@@ -77,7 +79,7 @@ function isVisible(section: string, persona: Persona): boolean {
 }
 
 export default function Dashboard() {
-  const [persona, setPersona] = useState<Persona>("all");
+  const [persona, setPersona] = useState<Persona>(getPersistedPersona);
   const recentIncidents = incidents.filter((i) => i.status !== "resolved" && i.status !== "closed").slice(0, 6);
   const activeRequests = serviceRequests.filter((r) => r.status === "open" || r.status === "in-progress").slice(0, 5);
   const filteredStats = statCards.filter((s) => s.personas.includes(persona));
@@ -86,26 +88,26 @@ export default function Dashboard() {
     <div className="space-y-6 animate-slide-in">
       {/* Header + Persona Toggle */}
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
-        <div>
-          <h1 className="text-2xl font-semibold tracking-tight">Operations Dashboard</h1>
-          <p className="text-sm text-muted-foreground mt-1">Real-time enterprise operations overview</p>
+        <div className="min-w-0">
+          <h1 className="text-xl sm:text-2xl font-semibold tracking-tight">Operations Dashboard</h1>
+          <p className="text-xs sm:text-sm text-muted-foreground mt-1">Real-time enterprise operations overview</p>
         </div>
         <PersonaToggle value={persona} onChange={setPersona} />
       </div>
 
-      {/* Stats Grid */}
-      <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-7 gap-3">
+      {/* Stats Grid — responsive: 2 cols mobile, 4 md, 7 lg */}
+      <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-7 gap-2 sm:gap-3">
         {filteredStats.map((stat) => (
           <div key={stat.label} className="stat-card-glow">
-            <div className="flex items-center justify-between mb-3">
-              <stat.icon className={`w-4 h-4 ${stat.color}`} />
-              <span className={`text-[10px] font-mono flex items-center gap-0.5 ${stat.up ? 'text-warning' : 'text-success'}`}>
+            <div className="flex items-center justify-between mb-2 sm:mb-3">
+              <stat.icon className={`w-3.5 sm:w-4 h-3.5 sm:h-4 ${stat.color}`} />
+              <span className={`text-[9px] sm:text-[10px] font-mono flex items-center gap-0.5 ${stat.up ? 'text-warning' : 'text-success'}`}>
                 {stat.up ? <TrendingUp className="w-3 h-3" /> : <TrendingDown className="w-3 h-3" />}
                 {stat.trend}
               </span>
             </div>
-            <p className="text-2xl font-semibold tracking-tight">{stat.value}</p>
-            <p className="text-[11px] text-muted-foreground mt-1">{stat.label}</p>
+            <p className="text-xl sm:text-2xl font-semibold tracking-tight truncate">{stat.value}</p>
+            <p className="text-[10px] sm:text-[11px] text-muted-foreground mt-1 truncate">{stat.label}</p>
           </div>
         ))}
       </div>
@@ -113,10 +115,13 @@ export default function Dashboard() {
       {/* Time to Burn */}
       {isVisible("timeToBurn", persona) && <TimeToBurn />}
 
+      {/* Threat Map — Security Lead only */}
+      {isVisible("threatMap", persona) && <ThreatMap />}
+
       {/* Service Health Map */}
       {isVisible("serviceHealthMap", persona) && <ServiceHealthMap />}
 
-      <div className="grid lg:grid-cols-3 gap-6">
+      <div className="grid lg:grid-cols-3 gap-4 sm:gap-6">
         {/* Incident Trend Chart */}
         {isVisible("incidentTrend", persona) && (
           <div className="lg:col-span-2 bg-card border border-border rounded-lg">
@@ -124,7 +129,7 @@ export default function Dashboard() {
               <h2 className="section-title">Incident Trend — Last 7 Days</h2>
               <span className="text-[10px] text-muted-foreground font-mono">Updated 2 min ago</span>
             </div>
-            <div className="p-5 h-64">
+            <div className="p-3 sm:p-5 h-56 sm:h-64">
               <ResponsiveContainer width="100%" height="100%">
                 <AreaChart data={operationsChartData}>
                   <defs>
@@ -168,7 +173,7 @@ export default function Dashboard() {
         {isVisible("rootCauseClusters", persona) && <RootCauseClusters />}
       </div>
 
-      <div className="grid lg:grid-cols-3 gap-6">
+      <div className="grid lg:grid-cols-3 gap-4 sm:gap-6">
         {/* Alerts & Notifications */}
         {isVisible("alerts", persona) && (
           <div className="bg-card border border-border rounded-lg">
@@ -198,7 +203,7 @@ export default function Dashboard() {
             <div className="section-header">
               <h2 className="section-title">Service Request Volume</h2>
             </div>
-            <div className="p-5 h-56">
+            <div className="p-3 sm:p-5 h-48 sm:h-56">
               <ResponsiveContainer width="100%" height="100%">
                 <BarChart data={operationsChartData} barSize={18}>
                   <CartesianGrid strokeDasharray="3 3" stroke="hsl(222 18% 16%)" />
@@ -228,13 +233,13 @@ export default function Dashboard() {
               <h2 className="section-title">System Health Status</h2>
               <span className="text-[10px] text-muted-foreground">Microsoft Environment</span>
             </div>
-            <div className="p-5 space-y-3">
+            <div className="p-4 sm:p-5 space-y-3">
               {systemHealthData.map((sys) => (
                 <div key={sys.name} className="flex items-center gap-3">
                   <span className={`w-1.5 h-1.5 rounded-full shrink-0 ${
                     sys.health >= 90 ? "bg-success" : sys.health >= 75 ? "bg-warning" : "bg-critical"
                   }`} />
-                  <span className="text-xs w-28 shrink-0">{sys.name}</span>
+                  <span className="text-xs w-20 sm:w-28 shrink-0 truncate">{sys.name}</span>
                   <div className="flex-1 h-1.5 bg-secondary rounded-full overflow-hidden">
                     <div
                       className={`h-full rounded-full transition-all ${
@@ -255,13 +260,13 @@ export default function Dashboard() {
         )}
       </div>
 
-      {/* Autopilot Actions Preview (replaces AI Recommended Actions) */}
+      {/* Autopilot Actions Preview */}
       {isVisible("autopilotPreview", persona) && <AutopilotPreview />}
 
       {/* Live Activity Feed */}
       {isVisible("activityFeed", persona) && <LiveActivityFeed />}
 
-      <div className="grid lg:grid-cols-2 gap-6">
+      <div className="grid lg:grid-cols-2 gap-4 sm:gap-6">
         {/* Recent Incidents */}
         {isVisible("recentIncidents", persona) && (
           <div className="bg-card border border-border rounded-lg">
@@ -273,14 +278,14 @@ export default function Dashboard() {
             </div>
             <div className="divide-y divide-border/40">
               {recentIncidents.map((inc) => (
-                <div key={inc.id} className="px-5 py-3 flex items-center gap-4 hover:bg-muted/20 transition-colors">
-                  <span className="text-[11px] font-mono text-muted-foreground w-16 shrink-0">{inc.id}</span>
+                <div key={inc.id} className="px-3 sm:px-5 py-3 flex items-center gap-2 sm:gap-4 hover:bg-muted/20 transition-colors">
+                  <span className="text-[10px] sm:text-[11px] font-mono text-muted-foreground w-14 sm:w-16 shrink-0">{inc.id}</span>
                   <div className="flex-1 min-w-0">
-                    <p className="text-sm truncate">{inc.title}</p>
-                    <p className="text-[11px] text-muted-foreground">{inc.affectedSystem}</p>
+                    <p className="text-xs sm:text-sm truncate">{inc.title}</p>
+                    <p className="text-[10px] sm:text-[11px] text-muted-foreground truncate">{inc.affectedSystem}</p>
                   </div>
-                  <span className={`status-badge status-${inc.status}`}>{inc.status}</span>
-                  <span className={`text-[11px] priority-${inc.priority} w-14 text-right capitalize`}>{inc.priority}</span>
+                  <span className={`status-badge status-${inc.status} hidden sm:inline-flex`}>{inc.status}</span>
+                  <span className={`text-[10px] sm:text-[11px] priority-${inc.priority} w-12 sm:w-14 text-right capitalize`}>{inc.priority}</span>
                 </div>
               ))}
             </div>
@@ -298,13 +303,13 @@ export default function Dashboard() {
             </div>
             <div className="divide-y divide-border/40">
               {activeRequests.map((req) => (
-                <div key={req.id} className="px-5 py-3 flex items-center gap-4 hover:bg-muted/20 transition-colors">
-                  <span className="text-[11px] font-mono text-muted-foreground w-14 shrink-0">{req.id}</span>
+                <div key={req.id} className="px-3 sm:px-5 py-3 flex items-center gap-2 sm:gap-4 hover:bg-muted/20 transition-colors">
+                  <span className="text-[10px] sm:text-[11px] font-mono text-muted-foreground w-12 sm:w-14 shrink-0">{req.id}</span>
                   <div className="flex-1 min-w-0">
-                    <p className="text-sm truncate">{req.requestType}</p>
-                    <p className="text-[11px] text-muted-foreground">{req.requestor} — {req.department}</p>
+                    <p className="text-xs sm:text-sm truncate">{req.requestType}</p>
+                    <p className="text-[10px] sm:text-[11px] text-muted-foreground truncate">{req.requestor} — {req.department}</p>
                   </div>
-                  <div className="flex items-center gap-1.5 text-[11px] text-muted-foreground">
+                  <div className="hidden sm:flex items-center gap-1.5 text-[11px] text-muted-foreground">
                     <Timer className="w-3 h-3" />
                     <span className="capitalize">{req.workflowStage.replace('-', ' ')}</span>
                   </div>
