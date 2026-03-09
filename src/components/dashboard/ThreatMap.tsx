@@ -1,9 +1,10 @@
 import { useState } from "react";
-import { Globe, ShieldAlert, MapPin, Shield, Clock, Server, Ban, AlertTriangle, ExternalLink } from "lucide-react";
+import { Globe, ShieldAlert, MapPin, Shield, Clock, Server, Ban, AlertTriangle, ExternalLink, Filter } from "lucide-react";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
 import { continentPaths, hqTarget } from "./worldMapPaths";
+import { addAuditEntry } from "@/hooks/use-security-audit";
 
 interface RelatedAlert {
   id: string;
