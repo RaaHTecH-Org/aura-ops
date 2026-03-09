@@ -1,9 +1,10 @@
 import { useState } from "react";
-import { Globe, ShieldAlert, MapPin, Shield, Clock, Server, Ban, AlertTriangle, ExternalLink } from "lucide-react";
+import { Globe, ShieldAlert, MapPin, Shield, Clock, Server, Ban, AlertTriangle, ExternalLink, Filter } from "lucide-react";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
 import { continentPaths, hqTarget } from "./worldMapPaths";
+import { addAuditEntry } from "@/hooks/use-security-audit";
 
 interface RelatedAlert {
   id: string;
@@ -111,19 +112,39 @@ const riskConfig = {
   medium: { color: "text-info", bg: "bg-info", pulse: "", stroke: "hsl(var(--info))" },
 };
 
+type RiskLevel = "critical" | "high" | "medium";
+
 export default function ThreatMap() {
   const [selectedActor, setSelectedActor] = useState<ThreatActor | null>(null);
   const [hoveredActor, setHoveredActor] = useState<ThreatActor | null>(null);
+  const [visibleSeverities, setVisibleSeverities] = useState<Set<RiskLevel>>(new Set(["critical", "high", "medium"]));
+
+  const toggleSeverity = (level: RiskLevel) => {
+    setVisibleSeverities((prev) => {
+      const next = new Set(prev);
+      if (next.has(level)) {
+        if (next.size > 1) next.delete(level);
+      } else {
+        next.add(level);
+      }
+      return next;
+    });
+  };
+
+  const filteredActors = threatActors.filter((a) => visibleSeverities.has(a.risk));
 
   const handleBlockIP = (ip: string) => {
     toast.success(`Blocked IP range ${ip.replace('xx', '0/24')}`, { description: "Firewall rule created successfully" });
+    addAuditEntry("block_ip", ip.replace('xx', '0/24'), "Firewall rule created — blocked entire /24 range");
     setSelectedActor(null);
   };
   const handleEnableGeoFencing = (country: string) => {
     toast.success(`Geo-fencing enabled for ${country}`, { description: "All traffic from this region will be blocked" });
+    addAuditEntry("geo_fence", country, `Geo-fencing enabled — all traffic from ${country} blocked`);
   };
   const handleEscalateToSOC = (ip: string) => {
     toast.info(`Escalated to SOC team`, { description: `Ticket created for IP ${ip}` });
+    addAuditEntry("escalate_soc", ip, `SOC ticket created for threat investigation`);
   };
 
   return (
@@ -133,9 +154,30 @@ export default function ThreatMap() {
           <Globe className="w-4 h-4 text-critical" />
           <h2 className="section-title">Threat Origin Map</h2>
         </div>
-        <div className="flex items-center gap-2">
+        <div className="flex items-center gap-2 flex-wrap">
+          {/* Severity Filters */}
+          <div className="flex items-center gap-1">
+            <Filter className="w-3 h-3 text-muted-foreground" />
+            {(["critical", "high", "medium"] as RiskLevel[]).map((level) => {
+              const active = visibleSeverities.has(level);
+              const colors = {
+                critical: active ? "bg-critical/20 text-critical border-critical/40" : "bg-muted/20 text-muted-foreground border-border",
+                high: active ? "bg-warning/20 text-warning border-warning/40" : "bg-muted/20 text-muted-foreground border-border",
+                medium: active ? "bg-info/20 text-info border-info/40" : "bg-muted/20 text-muted-foreground border-border",
+              };
+              return (
+                <button
+                  key={level}
+                  onClick={() => toggleSeverity(level)}
+                  className={`text-[9px] px-1.5 py-0.5 rounded-full font-medium capitalize border transition-colors cursor-pointer ${colors[level]}`}
+                >
+                  {level}
+                </button>
+              );
+            })}
+          </div>
           <span className="text-[10px] text-muted-foreground font-mono">
-            {threatActors.reduce((s, a) => s + a.attempts, 0)} total attempts
+            {filteredActors.reduce((s, a) => s + a.attempts, 0)} total attempts
           </span>
           <span className="text-[10px] bg-critical/15 text-critical px-2 py-0.5 rounded-full font-medium">
             INC-008 — Active Threat
@@ -170,7 +212,7 @@ export default function ThreatMap() {
             ))}
 
             {/* Attack lines */}
-            {threatActors.map((actor) => {
+            {filteredActors.map((actor) => {
               const cfg = riskConfig[actor.risk];
               const isHovered = hoveredActor?.ip === actor.ip;
               return (
@@ -187,7 +229,7 @@ export default function ThreatMap() {
             })}
 
             {/* Animated bullets */}
-            {threatActors.map((actor, idx) => {
+            {filteredActors.map((actor, idx) => {
               const cfg = riskConfig[actor.risk];
               const dur = actor.risk === "critical" ? "1.5s" : actor.risk === "high" ? "2s" : "2.5s";
               const delay = `${idx * 0.4}s`;
@@ -218,7 +260,7 @@ export default function ThreatMap() {
             <text x={hqTarget.x} y={hqTarget.y - 18} textAnchor="middle" fill="hsl(var(--primary))" fontSize={11} fontWeight={600}>HQ</text>
 
             {/* Threat actor points — interactive */}
-            {threatActors.map((actor) => {
+            {filteredActors.map((actor) => {
               const cfg = riskConfig[actor.risk];
               const isHovered = hoveredActor?.ip === actor.ip;
               return (
@@ -273,7 +315,7 @@ export default function ThreatMap() {
             Threat Actor IPs — Password Spray Campaign
           </p>
           <div className="divide-y divide-border/40">
-            {threatActors.map((actor) => {
+            {filteredActors.map((actor) => {
               const cfg = riskConfig[actor.risk];
               const isHovered = hoveredActor?.ip === actor.ip;
               return (

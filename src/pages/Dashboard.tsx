@@ -44,6 +44,7 @@ import ThreatMap from "@/components/dashboard/ThreatMap";
 import MiniThreatHeatmap from "@/components/dashboard/MiniThreatHeatmap";
 import BlastRadius from "@/components/dashboard/BlastRadius";
 import OpsRhythm from "@/components/dashboard/OpsRhythm";
+import SecurityAuditLog from "@/components/dashboard/SecurityAuditLog";
 
 const statCards = [
   { label: "Open Incidents", value: dashboardStats.openIncidents, icon: AlertTriangle, color: "text-warning", trend: "+3", up: true, personas: ["all", "ops", "security", "engineering"] },
@@ -78,6 +79,7 @@ const sectionVisibility: Record<string, Persona[]> = {
   activityFeed: ["all", "ops"],
   recentIncidents: ["all", "ops", "security"],
   activeRequests: ["all", "ops"],
+  securityAudit: ["security"],
 };
 
 function isVisible(section: string, persona: Persona): boolean {
@@ -136,6 +138,9 @@ export default function Dashboard() {
 
       {/* Threat Map — Security Lead only */}
       {isVisible("threatMap", persona) && <ThreatMap />}
+
+      {/* Security Audit Log — Security Lead only */}
+      {isVisible("securityAudit", persona) && <SecurityAuditLog />}
 
       {/* Service Health Map — shown separately if not combined with mini heatmap */}
       {isVisible("serviceHealthMap", persona) && !isVisible("miniThreatHeatmap", persona) && <ServiceHealthMap />}
