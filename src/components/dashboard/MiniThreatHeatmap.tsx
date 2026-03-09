@@ -161,7 +161,7 @@ export default function MiniThreatHeatmap() {
                   </div>
                   <div className="flex items-center gap-2">
                     <span className={`text-[9px] px-1.5 py-0.5 rounded border font-medium capitalize ${s.badge}`}>{region.intensity}</span>
-                    <span className="text-[10px] font-mono text-muted-foreground w-6 text-right">{region.attempts}</span>
+                    <span className={`text-[10px] font-mono w-6 text-right transition-colors duration-300 ${isSimulating && (deltas.get(region.region) ?? 0) > 0 ? "text-critical" : "text-muted-foreground"}`}>{region.attempts}</span>
                   </div>
                 </div>
                 <div className="h-1 bg-secondary/40 rounded-full overflow-hidden">
