@@ -139,6 +139,9 @@ export default function Dashboard() {
       {/* Threat Map — Security Lead only */}
       {isVisible("threatMap", persona) && <ThreatMap />}
 
+      {/* Security Audit Log — Security Lead only */}
+      {isVisible("securityAudit", persona) && <SecurityAuditLog />}
+
       {/* Service Health Map — shown separately if not combined with mini heatmap */}
       {isVisible("serviceHealthMap", persona) && !isVisible("miniThreatHeatmap", persona) && <ServiceHealthMap />}
       {isVisible("serviceHealthMap", persona) && isVisible("threatMap", persona) && <ServiceHealthMap />}
