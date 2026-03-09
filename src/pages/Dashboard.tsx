@@ -79,6 +79,7 @@ const sectionVisibility: Record<string, Persona[]> = {
   activityFeed: ["all", "ops"],
   recentIncidents: ["all", "ops", "security"],
   activeRequests: ["all", "ops"],
+  securityAudit: ["security"],
 };
 
 function isVisible(section: string, persona: Persona): boolean {
