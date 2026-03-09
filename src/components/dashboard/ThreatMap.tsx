@@ -315,7 +315,7 @@ export default function ThreatMap() {
             Threat Actor IPs — Password Spray Campaign
           </p>
           <div className="divide-y divide-border/40">
-            {threatActors.map((actor) => {
+            {filteredActors.map((actor) => {
               const cfg = riskConfig[actor.risk];
               const isHovered = hoveredActor?.ip === actor.ip;
               return (
