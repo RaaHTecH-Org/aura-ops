@@ -110,6 +110,11 @@ export default function ThreatTimeline() {
           Threat Timeline
         </h2>
         <div className="flex items-center gap-2">
+          {timeline.length > 0 && (
+            <Button variant="ghost" size="sm" className="h-6 px-2 text-[10px] gap-1" onClick={exportCSV}>
+              <Download className="w-3 h-3" /> Export
+            </Button>
+          )}
           {isSimulating && (
             <span className="text-[10px] bg-critical/15 text-critical px-2 py-0.5 rounded-full font-medium animate-pulse">
               Recording
