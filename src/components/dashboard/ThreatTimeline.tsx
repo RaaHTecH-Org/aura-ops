@@ -1,6 +1,8 @@
 import { useState, useEffect, useRef, useMemo } from "react";
-import { Activity } from "lucide-react";
+import { Activity, Download } from "lucide-react";
 import { useSimulation } from "@/hooks/use-simulation";
+import { Button } from "@/components/ui/button";
+import { toast } from "sonner";
 import {
   AreaChart,
   Area,
@@ -66,6 +68,19 @@ export default function ThreatTimeline() {
     return () => clearInterval(interval);
   }, [isSimulating, notifications]);
 
+  const exportCSV = () => {
+    const header = "Time,Critical,Warning,Info,Total";
+    const rows = timeline.map((t) => `"${t.time}",${t.critical},${t.warning},${t.info},${t.total}`);
+    const blob = new Blob([header + "\n" + rows.join("\n")], { type: "text/csv" });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = `threat-timeline-${new Date().toISOString().slice(0, 10)}.csv`;
+    a.click();
+    URL.revokeObjectURL(url);
+    toast.success("Timeline exported", { description: `${timeline.length} data points saved as CSV` });
+  };
+
   const maxTotal = useMemo(
     () => Math.max(10, ...timeline.map((t) => t.total)),
     [timeline],
@@ -95,6 +110,11 @@ export default function ThreatTimeline() {
           Threat Timeline
         </h2>
         <div className="flex items-center gap-2">
+          {timeline.length > 0 && (
+            <Button variant="ghost" size="sm" className="h-6 px-2 text-[10px] gap-1" onClick={exportCSV}>
+              <Download className="w-3 h-3" /> Export
+            </Button>
+          )}
           {isSimulating && (
             <span className="text-[10px] bg-critical/15 text-critical px-2 py-0.5 rounded-full font-medium animate-pulse">
               Recording
