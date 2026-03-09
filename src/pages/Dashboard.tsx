@@ -121,11 +121,25 @@ export default function Dashboard() {
       {/* Time to Burn */}
       {isVisible("timeToBurn", persona) && <TimeToBurn />}
 
+      {/* Mini Threat Heatmap — All and Security */}
+      {isVisible("miniThreatHeatmap", persona) && (
+        <div className="grid lg:grid-cols-3 gap-4 sm:gap-6">
+          <MiniThreatHeatmap />
+          {/* Placeholder for balance on desktop when not security persona */}
+          {!isVisible("threatMap", persona) && (
+            <div className="lg:col-span-2">
+              <ServiceHealthMap />
+            </div>
+          )}
+        </div>
+      )}
+
       {/* Threat Map — Security Lead only */}
       {isVisible("threatMap", persona) && <ThreatMap />}
 
-      {/* Service Health Map */}
-      {isVisible("serviceHealthMap", persona) && <ServiceHealthMap />}
+      {/* Service Health Map — shown separately if not combined with mini heatmap */}
+      {isVisible("serviceHealthMap", persona) && !isVisible("miniThreatHeatmap", persona) && <ServiceHealthMap />}
+      {isVisible("serviceHealthMap", persona) && isVisible("threatMap", persona) && <ServiceHealthMap />}
 
       <div className="grid lg:grid-cols-3 gap-4 sm:gap-6">
         {/* Incident Trend Chart */}
