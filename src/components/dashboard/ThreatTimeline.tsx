@@ -68,6 +68,19 @@ export default function ThreatTimeline() {
     return () => clearInterval(interval);
   }, [isSimulating, notifications]);
 
+  const exportCSV = () => {
+    const header = "Time,Critical,Warning,Info,Total";
+    const rows = timeline.map((t) => `"${t.time}",${t.critical},${t.warning},${t.info},${t.total}`);
+    const blob = new Blob([header + "\n" + rows.join("\n")], { type: "text/csv" });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = `threat-timeline-${new Date().toISOString().slice(0, 10)}.csv`;
+    a.click();
+    URL.revokeObjectURL(url);
+    toast.success("Timeline exported", { description: `${timeline.length} data points saved as CSV` });
+  };
+
   const maxTotal = useMemo(
     () => Math.max(10, ...timeline.map((t) => t.total)),
     [timeline],
