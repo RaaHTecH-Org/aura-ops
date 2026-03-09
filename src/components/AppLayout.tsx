@@ -93,6 +93,7 @@ export default function AppLayout({ children }: { children: ReactNode }) {
           <button
             className="ml-auto lg:hidden text-sidebar-foreground"
             onClick={() => setSidebarOpen(false)}
+            aria-label="Close sidebar"
           >
             <X className="w-5 h-5" />
           </button>
