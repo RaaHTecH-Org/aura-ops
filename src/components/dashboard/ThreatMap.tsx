@@ -150,34 +150,71 @@ export default function ThreatMap() {
       </div>
 
       <div className="p-4">
-        {/* SVG World Map */}
-        <div className="relative w-full overflow-hidden rounded-lg bg-secondary/30 border border-border/30">
+        {/* SVG World Map — Dot Matrix */}
+        <div className="relative w-full overflow-hidden rounded-lg bg-muted/10 border border-border/20">
           <svg
             viewBox="0 0 900 450"
             className="w-full h-auto"
             xmlns="http://www.w3.org/2000/svg"
           >
-            {/* Grid lines */}
-            {Array.from({ length: 13 }, (_, i) => (
-              <line key={`vg-${i}`} x1={i * 75} y1={0} x2={i * 75} y2={450} stroke="hsl(var(--border))" strokeOpacity={0.15} strokeDasharray="2 4" />
-            ))}
-            {Array.from({ length: 7 }, (_, i) => (
-              <line key={`hg-${i}`} x1={0} y1={i * 75} x2={900} y2={i * 75} stroke="hsl(var(--border))" strokeOpacity={0.15} strokeDasharray="2 4" />
-            ))}
-
-            {/* Simplified continent outlines */}
-            {/* North America */}
-            <path d="M120,80 L180,70 L240,75 L290,100 L310,140 L300,180 L280,200 L250,210 L220,220 L200,260 L180,280 L160,260 L140,220 L120,200 L100,160 L90,120 Z" fill="hsl(var(--muted))" fillOpacity={0.15} stroke="hsl(var(--border))" strokeOpacity={0.3} strokeWidth={0.8} />
-            {/* South America */}
-            <path d="M230,280 L260,270 L290,290 L310,320 L300,360 L280,390 L260,400 L240,380 L220,340 L210,310 Z" fill="hsl(var(--muted))" fillOpacity={0.15} stroke="hsl(var(--border))" strokeOpacity={0.3} strokeWidth={0.8} />
-            {/* Europe */}
-            <path d="M440,80 L480,75 L520,80 L560,90 L580,110 L570,140 L550,160 L520,170 L490,165 L470,150 L450,130 L440,110 Z" fill="hsl(var(--muted))" fillOpacity={0.15} stroke="hsl(var(--border))" strokeOpacity={0.3} strokeWidth={0.8} />
-            {/* Africa */}
-            <path d="M460,180 L510,175 L550,190 L570,220 L560,280 L540,330 L510,360 L480,350 L460,310 L450,260 L440,220 Z" fill="hsl(var(--muted))" fillOpacity={0.15} stroke="hsl(var(--border))" strokeOpacity={0.3} strokeWidth={0.8} />
-            {/* Asia */}
-            <path d="M580,60 L650,55 L720,70 L770,100 L780,140 L760,180 L730,200 L700,210 L660,200 L620,180 L590,150 L580,110 Z" fill="hsl(var(--muted))" fillOpacity={0.15} stroke="hsl(var(--border))" strokeOpacity={0.3} strokeWidth={0.8} />
-            {/* Australia */}
-            <path d="M720,300 L770,290 L810,310 L820,340 L800,370 L760,375 L730,360 L710,330 Z" fill="hsl(var(--muted))" fillOpacity={0.15} stroke="hsl(var(--border))" strokeOpacity={0.3} strokeWidth={0.8} />
+            {/* Dot-matrix continents */}
+            {(() => {
+              const CELL = 25;
+              const R = 3.5;
+              const dots: [number, number][] = [
+                // North America
+                [5,3],[6,3],[7,3],[8,3],[9,3],
+                [4,4],[5,4],[6,4],[7,4],[8,4],[9,4],[10,4],[11,4],
+                [4,5],[5,5],[6,5],[7,5],[8,5],[9,5],[10,5],[11,5],[12,5],
+                [5,6],[6,6],[7,6],[8,6],[9,6],[10,6],[11,6],
+                [6,7],[7,7],[8,7],[9,7],[10,7],
+                [7,8],[8,8],[9,8],
+                [8,9],[9,9],
+                // Central America
+                [9,10],[10,10],
+                // South America
+                [10,11],[11,11],[12,11],
+                [10,12],[11,12],[12,12],[13,12],
+                [10,13],[11,13],[12,13],[13,13],
+                [11,14],[12,14],[13,14],
+                [11,15],[12,15],
+                [12,16],
+                // Europe
+                [18,3],[19,3],[20,3],[21,3],[22,3],
+                [17,4],[18,4],[19,4],[20,4],[21,4],[22,4],[23,4],
+                [18,5],[19,5],[20,5],[21,5],[22,5],[23,5],
+                [19,6],[20,6],[21,6],[22,6],
+                // Africa
+                [19,7],[20,7],[21,7],[22,7],
+                [18,8],[19,8],[20,8],[21,8],[22,8],
+                [18,9],[19,9],[20,9],[21,9],[22,9],
+                [19,10],[20,10],[21,10],[22,10],
+                [19,11],[20,11],[21,11],
+                [20,12],[21,12],
+                // Asia
+                [23,2],[24,2],[25,2],[26,2],[27,2],
+                [23,3],[24,3],[25,3],[26,3],[27,3],[28,3],[29,3],
+                [23,4],[24,4],[25,4],[26,4],[27,4],[28,4],[29,4],[30,4],[31,4],
+                [24,5],[25,5],[26,5],[27,5],[28,5],[29,5],[30,5],[31,5],
+                [25,6],[26,6],[27,6],[28,6],[29,6],[30,6],
+                [26,7],[27,7],[28,7],[29,7],
+                [27,8],[28,8],
+                // Australia
+                [29,12],[30,12],[31,12],[32,12],
+                [29,13],[30,13],[31,13],[32,13],
+                [30,14],[31,14],[32,14],
+              ];
+              return dots.map(([c, r]) => (
+                <circle
+                  key={`d-${c}-${r}`}
+                  cx={c * CELL + CELL / 2}
+                  cy={r * CELL + CELL / 2}
+                  r={R}
+                  fill="hsl(var(--muted-foreground))"
+                  opacity={0.15}
+                />
+              ));
+            })()}
 
             {/* Attack lines from threat actors to target */}
             {threatActors.map((actor) => (
