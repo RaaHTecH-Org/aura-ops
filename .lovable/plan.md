@@ -1,85 +1,80 @@
 
 
-## Plan: Build Digital Twin & Autopilot Pages
+## Four New Dashboard Intelligence Features
 
-### Summary
-Create two new pages — **Digital Twin** (interactive infrastructure topology with time-travel) and **Autopilot** (AI auto-remediation workflows) — then add them to routing and navigation. The existing `ServiceHealthMap.tsx` component provides the foundational pattern for the topology graph.
+### A. Root Cause Clustering
+Replace the flat `aiInsights` list in the AI Insights panel with grouped clusters. Each cluster has a category label, incident count, and child insights.
 
----
+**Mock data** (`mock-data.ts`): Add `rootCauseClusters` array:
+```ts
+{ id: "rc-1", category: "Authentication Failures", severity: "critical", 
+  incidentIds: ["INC-001","INC-005","INC-012"], 
+  insights: ["Azure AD token service degradation...", "MFA push failures correlate..."],
+  trend: "escalating" }
+```
+3-4 clusters covering Identity, Network, Security, Compliance patterns.
 
-### 1. Create `src/pages/DigitalTwin.tsx`
-
-**Infrastructure Topology (based on ServiceHealthMap pattern):**
-- SVG-based graph with 9 nodes: Azure East/West, Entra ID, VPN Gateway, Exchange, SharePoint, Defender, Azure SQL, Internal Apps
-- Connection lines color-coded by health (healthy=primary, degraded=warning dashed, incident=critical dashed)
-- Animated pulse rings on degraded/incident nodes
-- Click node → detail panel slides in (status, incidents, affected systems, actions)
-- "Run Diagnostics" button navigates to `/autopilot?incident=INC-XXXX`
-
-**Node-to-Incident Mapping:**
-- `vpn-gw` → INC-2001, `entra-id` → INC-2002, `exchange` → INC-2003, `db-cluster` → INC-2004, `defender` → INC-2005, `storage-cluster` → INC-2006
-
-**Time-Travel Slider:**
-- 24-hour timeline slider (0-23h) at bottom
-- Predefined snapshots: states change at hours 0, 6, 8, 12, 18 (e.g., VPN degrades at h6, Entra incident at h8)
-- Play/pause auto-advance button
-- Current timestamp display
-
-**Summary Stats Bar:**
-- Total services, healthy, degraded, incidents counts — derived from current time-travel snapshot
-
-**Health Propagation:**
-- When parent node (e.g., Entra ID) is incident, dependent children show warning-style borders
+**Dashboard change**: Replace the current `aiInsights.map()` block in the AI Insights panel with clustered view. Each cluster shows category name, severity dot, incident count badge, and expandable child insights. Uses Collapsible component. Keep "Open AI Copilot" link.
 
 ---
 
-### 2. Create `src/pages/Autopilot.tsx`
+### B. Time to Burn Indicators
+Add a new widget between the stats grid and the Service Health Map showing countdown timers for critical/high incidents.
 
-**Autopilot Incidents (6 mock incidents):**
-- INC-2001: Azure VPN Gateway tunnel failure
-- INC-2002: Microsoft Entra ID auth latency
-- INC-2003: Exchange Online delivery delays
-- INC-2004: Azure SQL high DTU
-- INC-2005: Defender sensor offline
-- INC-2006: Azure Cache connectivity
+**Mock data** (`mock-data.ts`): Add `timeToBurn` array:
+```ts
+{ incidentId: "INC-001", title: "Azure AD Auth Failures", 
+  slaBreach: { minutes: 47, total: 240 },
+  capacityExhaustion: { minutes: 120, total: 480 },
+  securityEscalation: { minutes: 15, total: 60 } }
+```
+3 critical incidents with countdown data.
 
-Each with severity, affected system, confidence score, suggested actions, runbook steps, estimated resolution time.
-
-**Incident List:**
-- Table with columns: ID, title, severity, system, confidence (progress bar), status
-- Click to select → opens detail panel
-- `useSearchParams` reads `?incident=INC-XXXX` on mount to auto-select
-
-**AI Decision Pipeline Visualization:**
-- 5-step horizontal workflow: Detect → Analyze → Recommend → Execute → Verify
-- Each step: completed (green check), active (pulsing primary), pending (muted)
-- Connected by arrows between steps
-
-**Detail Panel:**
-- Full incident info, AI analysis, confidence breakdown
-- "Execute Runbook" button → animated step-by-step execution simulation with progress and checkmarks
-
-**Summary Cards:**
-- Active incidents, auto-resolved today, avg resolution time, AI confidence average
+**Dashboard change**: New section with 3 incident cards, each showing 3 horizontal progress bars (SLA, Capacity, Security) with remaining time, color-coded by urgency (green > 50%, warning 20-50%, critical < 20%). Uses the existing Progress component pattern.
 
 ---
 
-### 3. Modify `src/App.tsx`
-- Import DigitalTwin and Autopilot
-- Add routes: `/digital-twin` and `/autopilot`
+### C. Persona-Based Views
+Add a toggle group at the top of the dashboard (below the title) with 3 persona tabs: **All**, **Ops Lead**, **Security Lead**, **Engineering Lead**.
 
-### 4. Modify `src/components/AppLayout.tsx`
-- Add `Network` icon import for Digital Twin, `Cpu` icon for Autopilot
-- Add two nav items under "Intelligence" section:
-  - `/digital-twin` → "Digital Twin"
-  - `/autopilot` → "AI Autopilot"
+**Implementation**: Add `useState<string>("all")` for active persona. Each persona filters which widgets are visible and reorders stat cards:
+- **Ops Lead**: Prioritizes incidents, SLA, service requests, system health
+- **Security Lead**: Prioritizes security alerts, Defender status, suspicious activity alerts, root cause clusters
+- **Engineering Lead**: Prioritizes system health, capacity metrics, Azure SQL, DevOps-related items
+
+Uses `ToggleGroup` component. Persona selection wraps widget sections in conditional rendering. No new pages -- same Dashboard, different emphasis via show/hide and reorder.
 
 ---
 
-### Technical Notes
-- Reuses existing design patterns from `ServiceHealthMap.tsx` (SVG topology, statusConfig, detail panel)
-- Uses existing CSS classes: `section-header`, `section-title`, `status-badge`, `animate-slide-in`
-- Slider uses Radix `Slider` component already installed
-- Mobile responsive: detail panels stack below on small screens via `useIsMobile()`
-- No new dependencies needed
+### D. Autopilot Actions Preview
+Replace the current hardcoded "AI Recommended Actions" section with a live preview pulling from the Autopilot incidents data.
+
+**Mock data** (`mock-data.ts`): Export `autopilotPreviewActions` array:
+```ts
+{ id: "INC-2001", action: "Restart VPN Gateway", system: "VPN Gateway",
+  confidence: 94, requiresApproval: true, approver: "Network Ops Lead",
+  severity: "critical", estimatedResolution: "12 min" }
+```
+
+**Dashboard change**: Replace the static 4-action grid with cards sourced from `autopilotPreviewActions`. Each card shows: action name, system, confidence percentage bar, approval requirement badge ("Auto" vs "Approval Required"), estimated resolution time, and a "View in Autopilot" link that navigates to `/autopilot?incident=INC-2001`. The AI feels active -- confidence scores and approval gates are front and center.
+
+---
+
+### Files Modified
+
+| File | Change |
+|------|--------|
+| `src/data/mock-data.ts` | Add `rootCauseClusters`, `timeToBurn`, `autopilotPreviewActions` exports |
+| `src/pages/Dashboard.tsx` | Add persona toggle, Time to Burn section, replace AI Insights with clusters, replace Recommended Actions with Autopilot preview |
+
+### Rendering Order (with persona = "all")
+1. Title + Persona toggle
+2. Stats grid
+3. Time to Burn indicators (new)
+4. Service Health Map
+5. Incident Trend + Root Cause Clusters (replaces AI Insights)
+6. Alerts + Request Volume + System Health
+7. Autopilot Actions Preview (replaces AI Recommended Actions)
+8. Live Activity Feed
+9. Recent Incidents + Active Requests
 
