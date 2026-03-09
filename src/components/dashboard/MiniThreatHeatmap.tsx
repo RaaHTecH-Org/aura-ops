@@ -14,8 +14,12 @@ interface RegionThreat {
 
 const regionThreats: RegionThreat[] = [
   { region: "Eastern Europe", intensity: "high", attempts: 85, barPct: 100, hotspot: { x: 530, y: 110 }, continentId: "europe" },
+  { region: "South America", intensity: "high", attempts: 40, barPct: 47, hotspot: { x: 210, y: 310 }, continentId: "south-america" },
+  { region: "West Africa", intensity: "high", attempts: 28, barPct: 33, hotspot: { x: 468, y: 210 }, continentId: "africa" },
+  { region: "Southern Africa", intensity: "medium", attempts: 18, barPct: 21, hotspot: { x: 510, y: 305 }, continentId: "africa" },
   { region: "East Asia", intensity: "medium", attempts: 12, barPct: 14, hotspot: { x: 720, y: 120 }, continentId: "asia" },
   { region: "Western Europe", intensity: "low", attempts: 8, barPct: 9, hotspot: { x: 470, y: 100 }, continentId: "europe" },
+  { region: "East Africa", intensity: "low", attempts: 6, barPct: 7, hotspot: { x: 540, y: 238 }, continentId: "africa" },
 ];
 
 const intensityStyle = {
