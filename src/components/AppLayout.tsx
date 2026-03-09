@@ -180,7 +180,7 @@ export default function AppLayout({ children }: { children: ReactNode }) {
 
       <main className="flex-1 flex flex-col overflow-hidden">
         <header className="flex items-center gap-3 px-6 h-14 border-b border-border bg-card/50 backdrop-blur-sm shrink-0">
-          <button onClick={() => setSidebarOpen(true)} className="lg:hidden">
+          <button onClick={() => setSidebarOpen(true)} className="lg:hidden" aria-label="Open menu">
             <Menu className="w-5 h-5 text-muted-foreground" />
           </button>
           <div className="flex-1 flex items-center gap-3">
