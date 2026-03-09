@@ -1,5 +1,6 @@
 import { Shield, Ban, Globe, AlertTriangle, Clock, Download, Trash2 } from "lucide-react";
 import { useSecurityAudit, clearAuditEntries, type AuditEntry } from "@/hooks/use-security-audit";
+import { motion, AnimatePresence } from "framer-motion";
 import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
 
