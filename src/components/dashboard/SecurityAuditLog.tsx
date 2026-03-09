@@ -1,16 +1,19 @@
-import { Shield, Ban, Globe, AlertTriangle, Clock, Download, Trash2 } from "lucide-react";
+import { useState } from "react";
+import { Shield, Ban, Globe, AlertTriangle, Clock, Download, Trash2, Filter } from "lucide-react";
 import { useSecurityAudit, clearAuditEntries, type AuditEntry } from "@/hooks/use-security-audit";
 import { motion, AnimatePresence } from "framer-motion";
 import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
 
-const actionConfig: Record<AuditEntry["action"], { icon: typeof Ban; label: string; color: string }> = {
-  block_ip: { icon: Ban, label: "IP Blocked", color: "text-critical" },
-  geo_fence: { icon: Globe, label: "Geo-fence Enabled", color: "text-warning" },
-  escalate_soc: { icon: AlertTriangle, label: "Escalated to SOC", color: "text-info" },
+type ActionType = AuditEntry["action"];
+
+const actionConfig: Record<ActionType, { icon: typeof Ban; label: string; color: string; activeClass: string }> = {
+  block_ip: { icon: Ban, label: "Block IP", color: "text-critical", activeClass: "bg-critical/20 text-critical border-critical/40" },
+  geo_fence: { icon: Globe, label: "Geo-fence", color: "text-warning", activeClass: "bg-warning/20 text-warning border-warning/40" },
+  escalate_soc: { icon: AlertTriangle, label: "Escalate", color: "text-info", activeClass: "bg-info/20 text-info border-info/40" },
 };
 
-const actionLabels: Record<AuditEntry["action"], string> = {
+const actionLabels: Record<ActionType, string> = {
   block_ip: "IP Blocked",
   geo_fence: "Geo-fence Enabled",
   escalate_soc: "Escalated to SOC",
@@ -40,8 +43,25 @@ function exportAuditLog(entries: AuditEntry[]) {
   toast.success("Audit log exported", { description: `${entries.length} entries saved as CSV` });
 }
 
+const ALL_TYPES: ActionType[] = ["block_ip", "geo_fence", "escalate_soc"];
+
 export default function SecurityAuditLog() {
   const entries = useSecurityAudit();
+  const [activeFilters, setActiveFilters] = useState<Set<ActionType>>(new Set(ALL_TYPES));
+
+  const toggleFilter = (type: ActionType) => {
+    setActiveFilters((prev) => {
+      const next = new Set(prev);
+      if (next.has(type)) {
+        if (next.size > 1) next.delete(type);
+      } else {
+        next.add(type);
+      }
+      return next;
+    });
+  };
+
+  const filtered = entries.filter((e) => activeFilters.has(e.action));
 
   const handleClear = () => {
     const count = entries.length;
@@ -59,7 +79,7 @@ export default function SecurityAuditLog() {
         <div className="flex items-center gap-2">
           {entries.length > 0 && (
             <>
-              <Button variant="ghost" size="sm" className="h-6 px-2 text-[10px] gap-1" onClick={() => exportAuditLog(entries)}>
+              <Button variant="ghost" size="sm" className="h-6 px-2 text-[10px] gap-1" onClick={() => exportAuditLog(filtered)}>
                 <Download className="w-3 h-3" /> Export
               </Button>
               <Button variant="ghost" size="sm" className="h-6 px-2 text-[10px] gap-1 text-muted-foreground hover:text-critical" onClick={handleClear}>
@@ -72,6 +92,33 @@ export default function SecurityAuditLog() {
           </span>
         </div>
       </div>
+
+      {/* Action type filters */}
+      {entries.length > 0 && (
+        <div className="px-4 py-2 border-b border-border/40 flex items-center gap-1.5">
+          <Filter className="w-3 h-3 text-muted-foreground shrink-0" />
+          {ALL_TYPES.map((type) => {
+            const cfg = actionConfig[type];
+            const active = activeFilters.has(type);
+            return (
+              <button
+                key={type}
+                onClick={() => toggleFilter(type)}
+                className={`text-[9px] px-1.5 py-0.5 rounded-full font-medium border transition-colors cursor-pointer ${
+                  active ? cfg.activeClass : "bg-muted/20 text-muted-foreground border-border"
+                }`}
+              >
+                {cfg.label}
+              </button>
+            );
+          })}
+          {activeFilters.size < ALL_TYPES.length && (
+            <span className="text-[9px] text-muted-foreground/60 ml-1">
+              {filtered.length}/{entries.length}
+            </span>
+          )}
+        </div>
+      )}
 
       <AnimatePresence mode="popLayout">
         {entries.length === 0 ? (
@@ -91,7 +138,7 @@ export default function SecurityAuditLog() {
         ) : (
           <div className="divide-y divide-border/40 max-h-64 overflow-y-auto">
             <AnimatePresence initial={false}>
-              {entries.map((entry, idx) => {
+              {filtered.map((entry, idx) => {
                 const cfg = actionConfig[entry.action];
                 const Icon = cfg.icon;
                 return (
@@ -113,7 +160,7 @@ export default function SecurityAuditLog() {
                     </motion.div>
                     <div className="flex-1 min-w-0">
                       <div className="flex items-center gap-2">
-                        <span className={`text-xs font-medium ${cfg.color}`}>{cfg.label}</span>
+                        <span className={`text-xs font-medium ${cfg.color}`}>{actionLabels[entry.action]}</span>
                         <span className="text-[10px] font-mono text-muted-foreground">{entry.target}</span>
                       </div>
                       <p className="text-[10px] text-muted-foreground mt-0.5">{entry.detail}</p>
