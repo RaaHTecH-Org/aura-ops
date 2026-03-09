@@ -41,6 +41,7 @@ import TimeToBurn from "@/components/dashboard/TimeToBurn";
 import RootCauseClusters from "@/components/dashboard/RootCauseClusters";
 import AutopilotPreview from "@/components/dashboard/AutopilotPreview";
 import ThreatMap from "@/components/dashboard/ThreatMap";
+import MiniThreatHeatmap from "@/components/dashboard/MiniThreatHeatmap";
 import BlastRadius from "@/components/dashboard/BlastRadius";
 import OpsRhythm from "@/components/dashboard/OpsRhythm";
 
@@ -63,6 +64,7 @@ const alertIcon = {
 // Persona visibility config
 const sectionVisibility: Record<string, Persona[]> = {
   timeToBurn: ["all", "ops", "security"],
+  miniThreatHeatmap: ["all", "security"],
   serviceHealthMap: ["all", "ops", "engineering"],
   threatMap: ["security"],
   incidentTrend: ["all", "ops", "engineering"],
@@ -119,11 +121,25 @@ export default function Dashboard() {
       {/* Time to Burn */}
       {isVisible("timeToBurn", persona) && <TimeToBurn />}
 
+      {/* Mini Threat Heatmap — All and Security */}
+      {isVisible("miniThreatHeatmap", persona) && (
+        <div className="grid lg:grid-cols-3 gap-4 sm:gap-6">
+          <MiniThreatHeatmap />
+          {/* Placeholder for balance on desktop when not security persona */}
+          {!isVisible("threatMap", persona) && (
+            <div className="lg:col-span-2">
+              <ServiceHealthMap />
+            </div>
+          )}
+        </div>
+      )}
+
       {/* Threat Map — Security Lead only */}
       {isVisible("threatMap", persona) && <ThreatMap />}
 
-      {/* Service Health Map */}
-      {isVisible("serviceHealthMap", persona) && <ServiceHealthMap />}
+      {/* Service Health Map — shown separately if not combined with mini heatmap */}
+      {isVisible("serviceHealthMap", persona) && !isVisible("miniThreatHeatmap", persona) && <ServiceHealthMap />}
+      {isVisible("serviceHealthMap", persona) && isVisible("threatMap", persona) && <ServiceHealthMap />}
 
       <div className="grid lg:grid-cols-3 gap-4 sm:gap-6">
         {/* Incident Trend Chart */}
