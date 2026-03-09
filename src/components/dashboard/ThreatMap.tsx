@@ -117,6 +117,18 @@ const riskConfig = {
 type RiskLevel = "critical" | "high" | "medium";
 
 export default function ThreatMap() {
+  const { isSimulating } = useSimulation();
+  const actorKeys = useMemo(() => threatActors.map((a) => a.ip), []);
+  const deltas = useThreatCounters(actorKeys, isSimulating);
+
+  const liveActors = useMemo(() => {
+    if (!isSimulating) return threatActors;
+    return threatActors.map((a) => ({
+      ...a,
+      attempts: a.attempts + (deltas.get(a.ip) ?? 0),
+    }));
+  }, [isSimulating, deltas]);
+
   const [selectedActor, setSelectedActor] = useState<ThreatActor | null>(null);
   const [hoveredActor, setHoveredActor] = useState<ThreatActor | null>(null);
   const [visibleSeverities, setVisibleSeverities] = useState<Set<RiskLevel>>(new Set(["critical", "high", "medium"]));
@@ -133,7 +145,7 @@ export default function ThreatMap() {
     });
   };
 
-  const filteredActors = threatActors.filter((a) => visibleSeverities.has(a.risk));
+  const filteredActors = liveActors.filter((a) => visibleSeverities.has(a.risk));
 
   const handleBlockIP = (ip: string) => {
     toast.success(`Blocked IP range ${ip.replace('xx', '0/24')}`, { description: "Firewall rule created successfully" });
