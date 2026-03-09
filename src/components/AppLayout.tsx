@@ -93,6 +93,7 @@ export default function AppLayout({ children }: { children: ReactNode }) {
           <button
             className="ml-auto lg:hidden text-sidebar-foreground"
             onClick={() => setSidebarOpen(false)}
+            aria-label="Close sidebar"
           >
             <X className="w-5 h-5" />
           </button>
@@ -133,7 +134,7 @@ export default function AppLayout({ children }: { children: ReactNode }) {
 
         {/* Architecture card */}
         <div className="mx-3 mb-3 p-3 rounded-lg border border-primary/10 bg-primary/5">
-          <p className="text-[10px] uppercase tracking-widest text-primary/70 font-medium mb-2 flex items-center gap-1.5">
+          <p className="text-[10px] uppercase tracking-widest text-primary/80 font-medium mb-2 flex items-center gap-1.5">
             <Zap className="w-3 h-3" />
             Platform Architecture
           </p>
@@ -173,13 +174,13 @@ export default function AppLayout({ children }: { children: ReactNode }) {
               </p>
             </div>
           </div>
-          <p className="text-[9px] text-muted-foreground/40 mt-2.5 text-center tracking-wide">© {new Date().getFullYear()} Raahtech. All rights reserved.</p>
+          <p className="text-[9px] text-muted-foreground/70 mt-2.5 text-center tracking-wide">© {new Date().getFullYear()} Raahtech. All rights reserved.</p>
         </div>
       </aside>
 
       <main className="flex-1 flex flex-col overflow-hidden">
         <header className="flex items-center gap-3 px-6 h-14 border-b border-border bg-card/50 backdrop-blur-sm shrink-0">
-          <button onClick={() => setSidebarOpen(true)} className="lg:hidden">
+          <button onClick={() => setSidebarOpen(true)} className="lg:hidden" aria-label="Open menu">
             <Menu className="w-5 h-5 text-muted-foreground" />
           </button>
           <div className="flex-1 flex items-center gap-3">
@@ -208,7 +209,7 @@ export default function AppLayout({ children }: { children: ReactNode }) {
                 <p className="text-xs">{isSimulating ? "Simulation active" : "Start live demo"}</p>
               </TooltipContent>
             </Tooltip>
-            <button className="p-2 rounded-md hover:bg-secondary transition-colors text-muted-foreground hover:text-foreground">
+            <button className="p-2 rounded-md hover:bg-secondary transition-colors text-muted-foreground hover:text-foreground" aria-label="Search">
               <Search className="w-4 h-4" />
             </button>
             <Popover>
@@ -226,10 +227,10 @@ export default function AppLayout({ children }: { children: ReactNode }) {
                 <div className="flex items-center justify-between px-4 py-3 border-b border-border">
                   <h4 className="text-sm font-semibold">Notifications</h4>
                   <div className="flex gap-1">
-                    <button onClick={markAllRead} className="p-1 rounded hover:bg-secondary text-muted-foreground hover:text-foreground transition-colors" title="Mark all read">
+                    <button onClick={markAllRead} className="p-1 rounded hover:bg-secondary text-muted-foreground hover:text-foreground transition-colors" title="Mark all read" aria-label="Mark all read">
                       <CheckCheck className="w-3.5 h-3.5" />
                     </button>
-                    <button onClick={clearNotifications} className="p-1 rounded hover:bg-secondary text-muted-foreground hover:text-foreground transition-colors" title="Clear all">
+                    <button onClick={clearNotifications} className="p-1 rounded hover:bg-secondary text-muted-foreground hover:text-foreground transition-colors" title="Clear all" aria-label="Clear all">
                       <Trash2 className="w-3.5 h-3.5" />
                     </button>
                   </div>
