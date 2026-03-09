@@ -1,6 +1,8 @@
 import { useState, useEffect, useRef, useMemo } from "react";
-import { Activity } from "lucide-react";
+import { Activity, Download } from "lucide-react";
 import { useSimulation } from "@/hooks/use-simulation";
+import { Button } from "@/components/ui/button";
+import { toast } from "sonner";
 import {
   AreaChart,
   Area,
