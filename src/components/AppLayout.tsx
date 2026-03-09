@@ -134,7 +134,7 @@ export default function AppLayout({ children }: { children: ReactNode }) {
 
         {/* Architecture card */}
         <div className="mx-3 mb-3 p-3 rounded-lg border border-primary/10 bg-primary/5">
-          <p className="text-[10px] uppercase tracking-widest text-primary/70 font-medium mb-2 flex items-center gap-1.5">
+          <p className="text-[10px] uppercase tracking-widest text-primary/80 font-medium mb-2 flex items-center gap-1.5">
             <Zap className="w-3 h-3" />
             Platform Architecture
           </p>
