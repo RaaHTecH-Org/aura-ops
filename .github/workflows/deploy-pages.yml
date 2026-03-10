@@ -33,5 +33,5 @@ jobs:
       name: github-pages
       url: ${{ steps.deployment.outputs.page_url }}
     steps:
-      - uses: RaaHTecH-Org/actions-gh-pages@v3
+      - uses: actions/deploy-pages@v2
         id: deployment
