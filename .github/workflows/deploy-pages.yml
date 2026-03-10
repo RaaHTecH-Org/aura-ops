@@ -3,6 +3,7 @@ name: Deploy Frontend to GitHub Pages
 on:
   push:
     branches:
+      - main
       - copilot/deploy-to-github-pages
 
 permissions:
@@ -29,7 +30,7 @@ jobs:
         run: npm run build
 
       - name: Upload Pages artifact
-        uses: actions/upload-pages-artifact@v2
+        uses: actions/upload-pages-artifact@v3
         with:
           path: ./dist
 
@@ -41,5 +42,5 @@ jobs:
       url: ${{ steps.deployment.outputs.page_url }}
     steps:
       - name: Deploy to GitHub Pages
-        uses: actions/deploy-pages@v2
+        uses: actions/deploy-pages@v4
         id: deployment
