@@ -1,6 +1,7 @@
 # Raahtech Command Center
 
-AI-assisted enterprise IT operations platform purpose-built for Microsoft environments. Unifies incident management, service requests, asset tracking, and AI-driven automation into a single command center.
+AI-assisted enterprise IT operations command center — unified incident management, digital twin simulation, AI autopilot remediation, and real-time threat monitoring. Built for Microsoft environments (Azure, Entra ID, M365, Defender).
+
 
 ## Current Stage
 
@@ -70,3 +71,6 @@ npm run dev
 ## License
 
 Proprietary — Raahtech
+
+AI-assisted enterprise IT operations command center — unified incident management, digital twin simulation, AI autopilot remediation, and real-time threat monitoring. Built for Microsoft environments (Azure, Entra ID, M365, Defender).
+
