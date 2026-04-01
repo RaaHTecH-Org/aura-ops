@@ -76,3 +76,6 @@ Proprietary — Raahtech
 
 AI-assisted enterprise IT operations command center — unified incident management, digital twin simulation, AI autopilot remediation, and real-time threat monitoring. Built for Microsoft environments (Azure, Entra ID, M365, Defender).
 
+azure, cloud-infrastructure, incident-management, servicenow, ai-operations, digital-twin, security-operations, react, typescript, enterprise, itsm, siem, devops, managed-services
+
+
