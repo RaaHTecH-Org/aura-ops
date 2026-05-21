@@ -215,7 +215,7 @@ export default function AppLayout({ children }: { children: ReactNode }) {
             </button>
             <Popover>
               <PopoverTrigger asChild>
-                <button className="p-2 rounded-md hover:bg-secondary transition-colors text-muted-foreground hover:text-foreground relative">
+                <button aria-label={`Notifications${unreadCount > 0 ? ` (${unreadCount} unread)` : ""}`} className="p-2 rounded-md hover:bg-secondary transition-colors text-muted-foreground hover:text-foreground relative">
                   <Bell className="w-4 h-4" />
                   {unreadCount > 0 && (
                     <span className="absolute top-1 right-1 min-w-[16px] h-4 rounded-full bg-critical text-critical-foreground text-[10px] font-bold flex items-center justify-center px-1">
