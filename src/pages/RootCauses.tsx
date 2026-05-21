@@ -1,4 +1,5 @@
 import { useState } from "react";
+import SEO from "@/components/SEO";
 import { Bot, TrendingUp, Minus, TrendingDown, Users, Filter, ArrowRight, ChevronDown } from "lucide-react";
 import { Link } from "react-router-dom";
 import { rootCauseClusters, incidents } from "@/data/mock-data";
@@ -37,6 +38,7 @@ export default function RootCauses() {
 
   return (
     <div className="space-y-6 animate-slide-in">
+      <SEO title="Root Causes" description="AI-detected systemic patterns and recurring failure clusters across enterprise incidents." />
       {/* Header */}
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
         <div>

@@ -1,4 +1,5 @@
 import { useState, useEffect, useCallback } from "react";
+import SEO from "@/components/SEO";
 import { useSearchParams } from "react-router-dom";
 import { Cpu, AlertTriangle, AlertCircle, CheckCircle2, Clock, Play, Shield, Zap, Activity, ChevronRight, X, RotateCcw } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -129,6 +130,7 @@ export default function Autopilot() {
 
   return (
     <div className="space-y-6">
+      <SEO title="AI Autopilot" description="Automated incident detection, AI analysis, and policy-driven remediation for enterprise operations." />
       {/* Header */}
       <div className="section-header !border-0 !px-0 !py-0 !mb-0">
         <div>

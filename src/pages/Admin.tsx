@@ -1,4 +1,5 @@
 import {
+import SEO from "@/components/SEO";
   Settings,
   Users,
   Shield,
@@ -58,6 +59,7 @@ const workflowSettings = [
 export default function Admin() {
   return (
     <div className="space-y-6 animate-slide-in">
+      <SEO title="Administration" description="Configure connectors, integrations, policies, and audit trails for the Raahtech Command Center." />
       <div>
         <h1 className="text-2xl font-semibold tracking-tight">Administration</h1>
         <p className="text-sm text-muted-foreground mt-1">System configuration, integrations, and audit trail</p>

@@ -1,4 +1,5 @@
 import { serviceRequests } from "@/data/mock-data";
+import SEO from "@/components/SEO";
 import { useState } from "react";
 import { Plus, CheckCircle, Clock, XCircle, FileText, Wifi, Monitor, UserPlus, Key, Users, Search, Filter } from "lucide-react";
 
@@ -31,6 +32,7 @@ function WorkflowProgress({ currentStage }: { currentStage: string }) {
   const isClosed = currentStage === "closed";
   return (
     <div className="flex items-center gap-0.5">
+      <SEO title="Service Requests" description="Submit, approve, and fulfill IT service requests across the enterprise with end-to-end workflow visibility." />
       {workflowStages.map((stage, idx) => {
         const isDone = isClosed || idx < currentIdx;
         const isCurrent = !isClosed && idx === currentIdx;

@@ -1,4 +1,5 @@
 import { useState, useEffect, useCallback, useMemo, useRef } from "react";
+import SEO from "@/components/SEO";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import { X, AlertTriangle, CheckCircle2, AlertCircle, HelpCircle, Play, Pause, Clock, Network, Shield, Server, Activity, Radio, Keyboard, ShieldAlert, Bell } from "lucide-react";
 import { Slider } from "@/components/ui/slider";
@@ -237,6 +238,7 @@ export default function DigitalTwin() {
 
   return (
     <div className="space-y-6">
+      <SEO title="Digital Twin" description="Interactive infrastructure topology and time-travel analysis for enterprise services and dependencies." />
       {/* Header */}
       <div className="section-header !border-0 !px-0 !py-0 !mb-0">
         <div>
