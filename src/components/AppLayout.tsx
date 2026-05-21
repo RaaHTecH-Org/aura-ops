@@ -200,6 +200,7 @@ export default function AppLayout({ children }: { children: ReactNode }) {
               <TooltipTrigger asChild>
                 <button
                   onClick={toggleSimulation}
+                  aria-label={isSimulating ? "Stop live simulation" : "Start live simulation"}
                   className={`p-2 rounded-md transition-colors ${isSimulating ? "text-success" : "text-muted-foreground hover:text-foreground hover:bg-secondary"}`}
                 >
                   <Radio className={`w-4 h-4 ${isSimulating ? "animate-pulse" : ""}`} />
