@@ -1,5 +1,4 @@
 import {
-import SEO from "@/components/SEO";
   Settings,
   Users,
   Shield,
