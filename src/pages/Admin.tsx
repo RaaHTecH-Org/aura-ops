@@ -1,5 +1,4 @@
 import {
-import SEO from "@/components/SEO";
   Settings,
   Users,
   Shield,
@@ -12,6 +11,7 @@ import SEO from "@/components/SEO";
   Zap,
   ChevronRight,
 } from "lucide-react";
+import SEO from "@/components/SEO";
 
 const connectors = [
   { name: "Microsoft Entra ID", status: "connected" as const, version: "v2.0", lastSync: "2 min ago", desc: "Identity & access management" },
