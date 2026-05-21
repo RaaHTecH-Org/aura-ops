@@ -83,9 +83,9 @@ export default function AppLayout({ children }: { children: ReactNode }) {
             <Activity className="w-4 h-4 text-primary-foreground" />
           </div>
           <div className="flex-1 min-w-0">
-            <h1 className="text-sm font-semibold text-sidebar-accent-foreground leading-none tracking-tight">
+            <div className="text-sm font-semibold text-sidebar-accent-foreground leading-none tracking-tight">
               Raahtech Command
-            </h1>
+            </div>
             <p className="text-[10px] text-sidebar-foreground mt-0.5 uppercase tracking-widest">
               Center
             </p>
