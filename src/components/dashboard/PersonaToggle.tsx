@@ -64,6 +64,7 @@ export default function PersonaToggle({ value, onChange }: PersonaToggleProps) {
           <TooltipTrigger asChild>
             <button
               onClick={handleReset}
+              aria-label="Reset persona filter to all"
               className="p-1.5 rounded-md hover:bg-secondary transition-colors text-muted-foreground hover:text-foreground"
             >
               <RotateCcw className="w-3.5 h-3.5" />

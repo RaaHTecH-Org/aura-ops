@@ -83,9 +83,9 @@ export default function AppLayout({ children }: { children: ReactNode }) {
             <Activity className="w-4 h-4 text-primary-foreground" />
           </div>
           <div className="flex-1 min-w-0">
-            <h1 className="text-sm font-semibold text-sidebar-accent-foreground leading-none tracking-tight">
+            <div className="text-sm font-semibold text-sidebar-accent-foreground leading-none tracking-tight">
               Raahtech Command
-            </h1>
+            </div>
             <p className="text-[10px] text-sidebar-foreground mt-0.5 uppercase tracking-widest">
               Center
             </p>
@@ -200,6 +200,7 @@ export default function AppLayout({ children }: { children: ReactNode }) {
               <TooltipTrigger asChild>
                 <button
                   onClick={toggleSimulation}
+                  aria-label={isSimulating ? "Stop live simulation" : "Start live simulation"}
                   className={`p-2 rounded-md transition-colors ${isSimulating ? "text-success" : "text-muted-foreground hover:text-foreground hover:bg-secondary"}`}
                 >
                   <Radio className={`w-4 h-4 ${isSimulating ? "animate-pulse" : ""}`} />
@@ -214,7 +215,7 @@ export default function AppLayout({ children }: { children: ReactNode }) {
             </button>
             <Popover>
               <PopoverTrigger asChild>
-                <button className="p-2 rounded-md hover:bg-secondary transition-colors text-muted-foreground hover:text-foreground relative">
+                <button aria-label={`Notifications${unreadCount > 0 ? ` (${unreadCount} unread)` : ""}`} className="p-2 rounded-md hover:bg-secondary transition-colors text-muted-foreground hover:text-foreground relative">
                   <Bell className="w-4 h-4" />
                   {unreadCount > 0 && (
                     <span className="absolute top-1 right-1 min-w-[16px] h-4 rounded-full bg-critical text-critical-foreground text-[10px] font-bold flex items-center justify-center px-1">

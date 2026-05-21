@@ -1,4 +1,5 @@
 import { useState } from "react";
+import SEO from "@/components/SEO";
 import { incidents, type Incident } from "@/data/mock-data";
 import { Bot, Search, Plus, X, Calendar, Users, Server, AlertTriangle, ShieldAlert, Clock, ArrowUpRight } from "lucide-react";
 
@@ -42,6 +43,7 @@ export default function Incidents() {
 
   return (
     <div className="space-y-5 animate-slide-in">
+      <SEO title="Incidents" description="Triage, track, and resolve enterprise incidents with AI-assisted analysis and team routing." />
       <div className="flex items-center justify-between flex-wrap gap-4">
         <div>
           <h1 className="text-2xl font-semibold tracking-tight">Incident Management</h1>

@@ -1,4 +1,5 @@
 import { useState, useRef, useEffect } from "react";
+import SEO from "@/components/SEO";
 import { Bot, Send, Sparkles, MessageSquare, Zap, FileBarChart, Target, Shield } from "lucide-react";
 import ReactMarkdown from "react-markdown";
 
@@ -66,6 +67,7 @@ export default function AICopilot() {
 
   return (
     <div className="flex flex-col h-[calc(100vh-7rem)] animate-slide-in">
+      <SEO title="AI Copilot" description="Azure OpenAI-powered conversational assistant for enterprise operations, incidents, and insights." />
       <div className="mb-4 flex items-center justify-between">
         <div>
           <h1 className="text-2xl font-semibold tracking-tight flex items-center gap-2">

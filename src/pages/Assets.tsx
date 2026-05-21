@@ -1,4 +1,5 @@
 import { assets } from "@/data/mock-data";
+import SEO from "@/components/SEO";
 import { Monitor, Server, Smartphone, HardDrive, Search, Shield, Key, CheckCircle2, AlertTriangle, XCircle } from "lucide-react";
 import { useState } from "react";
 
@@ -48,6 +49,7 @@ export default function Assets() {
 
   return (
     <div className="space-y-6 animate-slide-in">
+      <SEO title="Assets" description="Enterprise asset inventory, compliance posture, and lifecycle management across endpoints and cloud." />
       <div>
         <h1 className="text-2xl font-semibold tracking-tight">Asset Management</h1>
         <p className="text-sm text-muted-foreground mt-1">

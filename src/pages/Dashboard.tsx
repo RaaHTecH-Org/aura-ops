@@ -1,4 +1,5 @@
 import { useState } from "react";
+import SEO from "@/components/SEO";
 import {
   AlertTriangle,
   ShieldAlert,
@@ -96,6 +97,7 @@ export default function Dashboard() {
 
   return (
     <div className="space-y-6 animate-slide-in">
+      <SEO title="Operations Dashboard" description="Real-time enterprise operations dashboard with service health, incidents, and AI-driven ops intelligence." />
       {/* Header + Persona Toggle */}
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
         <div className="min-w-0">
