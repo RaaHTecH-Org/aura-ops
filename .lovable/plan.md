@@ -1,26 +1,15 @@
+## Verify SEO Fixes
 
+### Steps
 
-# Replace Lovable Branding with Raahtech Logo
+1. **Read current findings** — call `seo_chat--list_findings` to see what the last scan flagged as failing/ignored.
+2. **Verify per-route metadata** — navigate the preview to `/`, `/incidents`, `/admin`, `/digital-twin` and confirm `document.title` changes per route (Helmet is working post react-helmet-async@2.0.5 downgrade).
+3. **Verify static assets** — fetch `/sitemap.xml`, `/robots.txt`, `/llms.txt` from the preview to confirm they serve correctly.
+4. **Verify head structure** — read `index.html` to confirm JSON-LD blocks, canonical, og/twitter tags, and favicon link are intact.
+5. **Verify single H1** — confirm `AppLayout.tsx` no longer emits an H1 for the sidebar brand and each page provides exactly one H1.
+6. **Mark resolved findings fixed** — call `seo_chat--update_findings` for each failing row that the code now satisfies, with a one-line explanation per finding.
+7. **Report** — summarize what passed, what (if anything) still needs work, and prompt user to click Rescan in the SEO tab for instant re-verification.
 
-## Changes
-
-### 1. Set Raahtech logo as favicon
-- Copy `user-uploads://sLogo.jpeg` to `public/favicon.jpeg`
-- Delete existing `public/favicon.ico`
-- Add `<link rel="icon" href="/favicon.jpeg" type="image/jpeg">` to `index.html`
-
-### 2. Remove Lovable branding from `index.html`
-- Replace `og:image` URL (`lovable.dev/opengraph-image-p98pqg.png`) → `/favicon.jpeg` (or remove until a proper OG image is created)
-- Change `twitter:site` from `@Lovable` → `@Raahtech`
-- Replace `twitter:image` URL → `/favicon.jpeg`
-
-### 3. No changes to `vite.config.ts`
-The `lovable-tagger` import is a build tool dependency, not user-facing branding. Removing it could break the build pipeline.
-
-## Files Modified
-| File | Change |
-|------|--------|
-| `public/favicon.jpeg` | New — copied from upload |
-| `public/favicon.ico` | Deleted |
-| `index.html` | Add favicon link, update OG/Twitter meta tags |
-
+### Notes
+- No code changes expected unless verification surfaces a regression.
+- Canonical base URL in `SEO.tsx` is `https://raahcomcenter.lovable.app`; the SEO guidance recommends `https://rcc.raahtech.org`. Flag this and ask before changing.
